@@ -1,0 +1,2 @@
+add_lunch_combo slim_janice-eng
+add_lunch_combo slim_janice-userdebug

@@ -1,0 +1,40 @@
+on init
+    write /sys/devices/platform/ab8500-i2c.0/ab8500-usb.0/boot_time_device 1
+
+on early-fs
+    mount ext4 /dev/block/mmcblk0p3 /system noatime wait
+
+    mkdir /efs
+    mount ext4 /dev/block/mmcblk0p7 /efs nosuid nodev noatime wait
+
+    # J4FS(lfs) mount points.
+    mkdir /mnt 0775 root root
+    mkdir /mnt/.lfs 0755 root root
+	
+	# Install Kernel Module
+    insmod /system/lib/modules/j4fs.ko
+    insmod /system/lib/modules/param.ko
+
+    mount j4fs /dev/block/mmcblk0p1 /mnt/.lfs wait
+	
+# Always start adbd on userdebug and eng builds
+# In recovery, always run adbd as root.
+on property:ro.debuggable=1
+    write /sys/class/android_usb/android0/enable 0
+    write /sys/class/android_usb/android0/idVendor 04e8
+    write /sys/class/android_usb/android0/idProduct 6860
+    write /sys/class/android_usb/android0/functions adb
+    write /sys/class/android_usb/android0/enable 1
+    write /sys/class/android_usb/android0/iManufacturer $ro.product.manufacturer
+    write /sys/class/android_usb/android0/iProduct $ro.product.model
+    write /sys/class/android_usb/android0/iSerial $ro.serialno
+    write /sys/devices/platform/ab8500-i2c.0/ab8500-usb.0/boot_time_device 1
+    start adbd
+    setprop service.adb.root 1
+
+# Restart adbd so it can run as root
+on property:service.adb.root=1
+    write /sys/class/android_usb/android0/enable 0
+    restart adbd
+    write /sys/class/android_usb/android0/enable 1
+    write /sys/devices/platform/ab8500-i2c.0/ab8500-usb.0/boot_time_device 1
