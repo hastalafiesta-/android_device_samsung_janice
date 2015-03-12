@@ -1,36 +1,26 @@
 #
 # system.prop for janice
 #
-
 rild.libpath=/system/lib/libsec-ril.so
 rild.libargs=-d /dev/ttyS0
-
+ste.cam.ext.cfg.path.secondary=/system/usr/share/camera/config_file/samsung_s5k4ecgx_janice.dat
+ro.telephony.call_ring.multiple=false
 ro.sf.lcd_density=240
 ro.lcd_min_brightness=30
-
-# STE: Low power audio - enable ULP mode
-ste.nmf.autoidle=1
-
-# STE: UNSOL_CALL_RING is only sent once from RIL.
-# Android needs to generate more rings if needed.
-ro.telephony.call_ring.multiple=false
-
-# STE: Hardware video codecs configuration
-ste.video.dec.mpeg4.in.size=8192
-ste.video.enc.out.buffercnt=5
-ste.video.dec.recycle.delay=1
-
-# STE: Fast Dormancy Flag
-# Fast Dormancy based on USB Tether Events and Screen States
-ste.special_fast_dormancy=false
-
-# STE: camera orientation front & back
-ste.cam.front.orientation=270
 ste.cam.back.orientation=90
-
-# STE: Camera file path configuration
-ste.cam.ext.cfg.path.secondary=/system/usr/share/camera/config_file/samsung_s5k4ecgx_janice.dat
-
+ste.cam.front.orientation=270
+ste.omx.ctx=0
+ste.nmf.autoidle=1
+ste.video.dec.mpeg4.in.size=8192
+ste.video.dec.recycle.delay=1
+ste.video.enc.out.buffercnt=5
+ste.special_fast_dormancy=false
+ro.zygote.disable_gl_preload=1
+ro.bq.gpu_to_cpu_unsupported=1
+debug.hwui.render_dirty_regions=false
+# USB
+persist.sys.usb.config=mtp,adb
+persist.service.adb.enable=1
 # Hardware info
 ro.device.chipset=ST-Ericsson NovaThor U8500 (45nm)
 ro.device.cpu=ARMv7 1GHz Dual-core ARM Cortex-A9

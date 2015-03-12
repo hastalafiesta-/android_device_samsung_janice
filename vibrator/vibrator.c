@@ -56,3 +56,17 @@ int sendit(int timeout_ms)
 
     return (ret == nwr) ? 0 : -1;
 }
+
+int vibrator_on(int timeout_ms)
+{
+    /* constant on, up to maximum allowed time */
+	if(timeout_ms < 0)
+		return sendit(15000);
+	return sendit(timeout_ms);
+}
+
+int vibrator_off()
+{	
+	/* checks if the device is vibrating, if it's vibrating stop, if not, do nothing */
+	return (vibrator_exists() == 0) ? 0 : 1;
+}

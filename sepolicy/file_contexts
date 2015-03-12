@@ -1,0 +1,41 @@
+# GFX
+/dev/mali                   u:object_r:gpu_device:s0
+/dev/ump                    u:object_r:gpu_device:s0
+/dev/b2r2_blt               u:object_r:gpu_device:s0
+/dev/disp0                  u:object_r:graphics_device:s0
+/dev/comp0                  u:object_r:graphics_device:s0
+
+# RIL
+/dev/rpc                    u:object_r:radio_device:s0
+/modemfs(/.*)?              u:object_r:radio_data_file:s0
+
+/efs/wifi(/.*)?             u:object_r:wifi_data_file:s0
+/dev/block/mmcblk0p7        u:object_r:efs_block_device:s0
+
+# Bluetooth
+/dev/ttyAMA0                u:object_r:hci_attach_dev:s0
+/efs/bluetooth(/.*)?        u:object_r:bluetooth_data_file:s0
+
+# GPS
+/dev/ttyAMA1                u:object_r:gps_device:s0
+/dev/mmc328x                u:object_r:gps_device:s0
+/dev/bma222                 u:object_r:gps_device:s0
+/dev/ecompass_ctrl          u:object_r:gps_device:s0
+
+# Sensors
+/dev/rn5t592                u:object_r:sensors_device:s0
+/dev/alps_io                u:object_r:sensors_device:s0
+/dev/gp2a_prox              u:object_r:sensors_device:s0
+/dev/gp2a_light             u:object_r:sensors_device:s0
+/dev/mpu60x0_gyro           u:object_r:sensors_device:s0
+/dev/mpu60x0_accel          u:object_r:sensors_device:s0
+
+/dev/tee                    u:object_r:tee_device:s0
+/dev/pipes                  u:object_r:socket_device:s0
+
+# For wpa_supp
+/dev/rfkill                 u:object_r:rfkill_device:s0
+
+# Firmwares
+/system/vendor/firmware/fw_bcmdhd.bin               u:object_r:firmware_wlan:s0
+/system/vendor/firmware/fw_bcmdhd_apsta.bin         u:object_r:firmware_wlan:s0

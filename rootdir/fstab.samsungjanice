@@ -16,7 +16,7 @@
 /devices/sdi0/mmc_host/mmc1/mmc1        auto                auto      defaults                                                                          voldmanaged=sdcard1:auto
 
 # Recovery
-/dev/block/mmcblk0p15                   /boot               emmc      defaults                                                                          recoveryonly
+/dev/block/mmcblk0p15                   /boot               emmc      defaults                                                                          defaults
 
 # ZRAM
 /dev/block/zram0                        none                swap      defaults                                                                          zramsize=104857600

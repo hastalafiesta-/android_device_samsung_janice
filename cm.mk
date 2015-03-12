@@ -5,16 +5,11 @@ PRODUCT_RELEASE_NAME := GT-I9070
 TARGET_SCREEN_HEIGHT := 800
 TARGET_SCREEN_WIDTH := 480
 
+
 # Inherit device configuration
 $(call inherit-product, device/samsung/janice/full_janice.mk)
 
-# CM Packages
-PRODUCT_PACKAGES += \
-    Stk \
-    org.cyanogenmod.hardware \
-    org.cyanogenmod.hardware.xml
-
-# Inherit some common CM stuff.
+# Inherit some common CM stuff
 $(call inherit-product, vendor/cm/config/common_full_phone.mk)
 
 # Device identifier. This must come after all inclusions
