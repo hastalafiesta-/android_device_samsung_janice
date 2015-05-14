@@ -5,7 +5,6 @@ PRODUCT_RELEASE_NAME := GT-I9070
 TARGET_SCREEN_HEIGHT := 800
 TARGET_SCREEN_WIDTH := 480
 
-
 # Inherit device configuration
 $(call inherit-product, device/samsung/janice/full_janice.mk)
 

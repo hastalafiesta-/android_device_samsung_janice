@@ -17,8 +17,9 @@
 
 LOCAL_PATH := device/samsung/janice
 
-TARGET_SPECIFIC_HEADER_PATH := $(LOCAL_PATH)/include
+TARGET_SPECIFIC_HEADER_PATH := device/samsung/janice/include
 PRODUCT_VENDOR_KERNEL_HEADERS := $(LOCAL_PATH)/kernel-headers
+TARGET_OTA_ASSERT_DEVICE := janice,i9070,GT-I9070
 
 # Board
 TARGET_NO_BOOTLOADER := true
@@ -40,7 +41,6 @@ BOARD_USERDATAIMAGE_PARTITION_SIZE := 2147483648
 TARGET_SOC := u8500
 BOARD_USES_STE_HARDWARE := true
 BOARD_USES_STE_SAMSUNG_HARDWARE := true
-
 TARGET_BOARD_PLATFORM := montblanc
 COMMON_GLOBAL_CFLAGS += -DSTE_HARDWARE -DSTE_SAMSUNG_HARDWARE
 
@@ -58,8 +58,6 @@ TARGET_GLOBAL_CPPFLAGS += -mtune=cortex-a9 -mfpu=neon -mfloat-abi=softfp
 # Kernel
 BOARD_KERNEL_PAGESIZE := 4096
 BOARD_KERNEL_BASE := 0x40000000
-#BOARD_KERNEL_CMDLINE := "androidboot.selinux=permissive"
-#BOARD_CUSTOM_BOOTIMG_MK := $(LOCAL_PATH)/shbootimg.mk
 TARGET_PREBUILT_KERNEL := device/samsung/janice/prebuilt/zImage
 
 # Graphics
@@ -114,22 +112,10 @@ BOARD_VOLD_DISC_HAS_MULTIPLE_MAJORS := true
 TARGET_USE_CUSTOM_LUN_FILE_PATH := "/sys/devices/platform/musb-ux500.0/musb-hdrc/gadget/lun%d/file"
 
 # Charging mode
-BOARD_CHARGING_MODE_BOOTING_LPM := /sys/devices/virtual/power_supply/battery/lpm_mode
-BOARD_CHARGER_ENABLE_SUSPEND := true
-
-# Recovery
-#BOARD_UMS_LUNFILE := "/sys/devices/platform/musb-ux500.0/musb-hdrc/gadget/lun0/file"
-#BOARD_CUSTOM_RECOVERY_KEYMAPPING := ../../../device/samsung/janice/recovery/recovery_keys.c
-#BOARD_CUSTOM_GRAPHICS := ../../../device/samsung/janice/recovery/graphics.c
-#TARGET_RECOVERY_FSTAB := device/samsung/janice/rootdir/fstab.samsungjanice
-#BOARD_USES_MMCUTILS := true
-#BOARD_HAS_NO_MISC_PARTITION := true
-#BOARD_HAS_NO_SELECT_BUTTON := true
-#BOARD_SUPPRESS_EMMC_WIPE := true
-#BOARD_RECOVERY_SWIPE := true
+BOARD_LPM_BOOT_ARGUMENT_NAME := lpm_boot
+BOARD_LPM_BOOT_ARGUMENT_VALUE := 1
 
 # SELinux
-
 BOARD_SEPOLICY_DIRS := $(BOARD_SEPOLICY_DIRS) \
     $(LOCAL_PATH)/sepolicy
 
@@ -155,14 +141,6 @@ COMMON_GLOBAL_CFLAGS += -DNEEDS_VECTORIMPL_SYMBOLS -DADD_LEGACY_ACQUIRE_BUFFER_S
 BOARD_USES_LEGACY_MMAP := true
 TARGET_ENABLE_NON_PIE_SUPPORT := true
 
-# == BEGIN LOCAL CONFIG ==
-
-TARGET_OTA_ASSERT_DEVICE := janice,i9070,GT-I9070
-
-# Kernel
-#TARGET_KERNEL_SOURCE := kernel/samsung/u8500
-#TARGET_KERNEL_CONFIG := mk_release_noswp_defconfig
-
 # Bluetooth
 BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := $(LOCAL_PATH)/configs/bluetooth/include
 
@@ -177,7 +155,6 @@ TARGET_RECOVERY_FSTAB := $(LOCAL_PATH)/rootdir/fstab.samsungjanice
 # Vibrator
 BOARD_HAS_VIBRATOR_IMPLEMENTATION := ../../device/samsung/janice/vibrator/vibrator.c
 
-TARGET_SPECIFIC_HEADER_PATH := device/samsung/janice/include
 # Hardware tunables (device parts replacement)
 BOARD_HARDWARE_CLASS := device/samsung/janice/cmhw
 

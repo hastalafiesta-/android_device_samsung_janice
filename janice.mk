@@ -31,7 +31,7 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/rootdir/init.u8500.rc:root/init.u8500.rc \
     $(LOCAL_PATH)/rootdir/init.u8500.usb.rc:root/init.u8500.usb.rc
 
-# Prebuilt kernel
+# Prebuilt kernel (is not working, just as a placeholder)
 PRODUCT_COPY_FILES += \
     device/samsung/janice/prebuilt/zImage:zImage
 
@@ -51,8 +51,30 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.bq.gpu_to_cpu_unsupported=1 \
     debug.sf.hw=1 \
     debug.hwui.render_dirty_regions=false \
-    persist.sys.strictmode.disable=1 \
-    persist.sys.dalvik.multithread=true
+    persist.sys.strictmode.disable=1
+
+# Dalvik optimizations
+PRODUCT_PROPERTY_OVERRIDES += \
+    persist.sys.dalvik.multithread=true \
+    dalvik.vm.dexopt-data-only=1 \
+    dalvik.vm.heapstartsize=5m \
+    dalvik.vm.heapgrowthlimit=48m \
+    dalvik.vm.heapsize=128m \
+    dalvik.vm.heaptargetutilization=0.75 \
+    dalvik.vm.heapminfree=512k \
+    dalvik.vm.heapmaxfree=4m \
+    dalvik.vm.jit.codecachesize=0 \
+    dalvik.vm.image-dex2oat-filter=speed \
+    dalvik.vm.dex2oat-filter=interpret-only
+
+# Misc
+
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.config.max_starting_bg=8 \
+    config.disable_atlas=true \
+    camera2.portability.force_api=1
+
+PRODUCT_TAGS += dalvik.gc.type-precise
 
 # Media
 PRODUCT_COPY_FILES += \
@@ -63,11 +85,6 @@ PRODUCT_COPY_FILES += \
     frameworks/av/media/libstagefright/data/media_codecs_google_audio.xml:system/etc/media_codecs_google_audio.xml \
     frameworks/av/media/libstagefright/data/media_codecs_google_telephony.xml:system/etc/media_codecs_google_telephony.xml \
     frameworks/av/media/libstagefright/data/media_codecs_google_video.xml:system/etc/media_codecs_google_video.xml
-
-    # Wi-Fi packages
-
-PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/configs/wpa_supplicant.conf:system/etc/wifi/wpa_supplicant.conf
 
 # Wi-Fi packages
 PRODUCT_PACKAGES += \
@@ -82,7 +99,7 @@ PRODUCT_PACKAGES += \
 
 PRODUCT_PROPERTY_OVERRIDES += \
     wifi.interface=wlan0 \
-    wifi.supplicant_scan_interval=150
+    wifi.supplicant_scan_interval=250
 $(call inherit-product-if-exists, hardware/broadcom/wlan/bcmdhd/firmware/bcm4330/device-bcm.mk)
 
 # Bluetooth
@@ -118,16 +135,11 @@ $(call inherit-product, hardware/u8500/u8500.mk)
 
 PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
     persist.sys.usb.config=mtp \
-    persist.service.adb.enable=1 \
-    camera2.portability.force_api=1
+    persist.service.adb.enable=1
 
 # Charger
 PRODUCT_COPY_FILES += \
    $(LOCAL_PATH)/rootdir/lpm.rc:root/lpm.rc
-
-#PRODUCT_PACKAGES += \
-   charger \
-   charger_res_images
 
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/prebuilt/charger/charger:root/sbin/charger \
@@ -208,18 +220,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.config.ntp.server_poll=86400000 \
     ro.config.ntp.clock_sync=1800000 \
     ro.config.ntp.sync_mode=3
-
-# Dalvik VM config for 768MB RAM devices
-PRODUCT_PROPERTY_OVERRIDES += \
-    dalvik.vm.dexopt-data-only=1 \
-    dalvik.vm.heapstartsize=5m \
-    dalvik.vm.heapgrowthlimit=48m \
-    dalvik.vm.heapsize=128m \
-    dalvik.vm.heaptargetutilization=0.75 \
-    dalvik.vm.heapminfree=512k \
-    dalvik.vm.heapmaxfree=4m
-PRODUCT_TAGS += dalvik.gc.type-precise
-
 
 # Use non-open-source parts if present
 $(call inherit-product-if-exists, vendor/samsung/u8500-common/janice/janice-vendor-blobs.mk)
