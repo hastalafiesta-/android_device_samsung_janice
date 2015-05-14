@@ -16,13 +16,6 @@ ste.video.dec.recycle.delay=1
 ste.video.enc.out.buffercnt=5
 ste.special_fast_dormancy=false
 
-# Misc
-dalvik.vm.jit.codecachesize=0
-ro.config.max_starting_bg=8
-config.disable_atlas=true
-dalvik.vm.image-dex2oat-filter=speed
-dalvik.vm.dex2oat-filter=interpret-only
-
 # Hardware info
 ro.device.chipset=ST-Ericsson NovaThor U8500 (45nm)
 ro.device.cpu=ARMv7 1GHz Dual-core ARM Cortex-A9
