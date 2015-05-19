@@ -211,7 +211,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.config.ntp.sync_mode=3
 
 # Use non-open-source parts if present
-$(call inherit-product-if-exists, vendor/samsung/u8500-common/janice/janice-vendor-blobs.mk)
+$(call inherit-product-if-exists, vendor/samsung/janice/janice/janice-vendor-blobs.mk)
 
     
 # STE Modem
