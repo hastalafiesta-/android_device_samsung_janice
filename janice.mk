@@ -135,9 +135,6 @@ PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
 
 # Charger
 PRODUCT_COPY_FILES += \
-   $(LOCAL_PATH)/rootdir/lpm.rc:root/lpm.rc
-
-PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/prebuilt/charger/charger:root/sbin/charger \
     $(LOCAL_PATH)/prebuilt/charger/images/battery_0.png:root/res/images/charger/battery_0.png \
     $(LOCAL_PATH)/prebuilt/charger/images/battery_1.png:root/res/images/charger/battery_1.png \
