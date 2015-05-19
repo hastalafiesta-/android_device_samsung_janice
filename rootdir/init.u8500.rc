@@ -23,6 +23,12 @@ on init
     symlink /storage/sdcard1 /extSdCard
     symlink /storage/sdcard1 /mnt/extSdCard
 
+    # Setup the global environment
+    export LD_LIBRARY_PATH /vendor/lib:/system/lib:/system/lib/ste_omxcomponents
+    export OMX_STE_ENS_COMPONENTS_DIR /system/lib/ste_omxcomponents/
+    export OMX_BELLAGIO_LOADER_REGISTRY /system/etc/omxloaders
+    export OMX_STE_CSCALL_COMPONENTS_DIR /system/lib/ste_omxcomponents/
+
     # Vibetonz
     export VIBE_PIPE_PATH /dev/pipes
     mkdir /dev/pipes 0771 shell shell
@@ -235,6 +241,7 @@ on post-fs-data
     write /sys/devices/system/cpu/cpufreq/interactive/min_sample_time "40000 800000:80000"
     write /sys/devices/system/cpu/cpufreq/interactive/timer_rate "60000 200000:40000 800000:30000 1000000:20000"
     write /sys/block/mmcblk0/queue/scheduler deadline
+    write /sys/block/mmcblk1/queue/scheduler deadline
 
     # If there is no fs-post-data action in the init.<device>.rc file, you
     # must uncomment this line, otherwise encrypted filesystems
@@ -335,13 +342,6 @@ on boot
     class_start modem
     class_start default
 
-service ril-daemon /system/bin/rild
-    class main
-    socket rild stream 660 root radio
-    socket rild-debug stream 660 radio system
-    user root
-    group radio cache inet misc audio system sdcard_rw log sdcard_r
-
 # Crash Safe Parameter Storage Area, serving production parameter requests from clients.
 # Configuration is read from file "/etc/cspsa.conf" and each found area spawns a CSPSA server
 # process.
@@ -371,8 +371,6 @@ service admsrv /system/bin/admsrv
     group system audio inet net_bt net_bt_admin net_raw shell log
     ioprio rt 4
     capability NET_ADMIN NET_RAW SYS_NICE
-
-    seclabel u:r:admsrv:s0
 
 service geomagneticd /system/bin/geomagneticd6x
     user compass

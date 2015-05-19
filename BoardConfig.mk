@@ -55,11 +55,6 @@ ARCH_ARM_HAVE_NEON := true
 TARGET_GLOBAL_CFLAGS += -mtune=cortex-a9 -mfpu=neon -mfloat-abi=softfp
 TARGET_GLOBAL_CPPFLAGS += -mtune=cortex-a9 -mfpu=neon -mfloat-abi=softfp
 
-# Kernel
-BOARD_KERNEL_PAGESIZE := 4096
-BOARD_KERNEL_BASE := 0x40000000
-TARGET_PREBUILT_KERNEL := device/samsung/janice/prebuilt/zImage
-
 # Graphics
 USE_OPENGL_RENDERER := true
 BOARD_EGL_WORKAROUND_BUG_10194508 := true
@@ -133,6 +128,44 @@ BOARD_SEPOLICY_UNION += \
 # Delete the line below when SELinux is enabled on all devices
 COMMON_GLOBAL_CFLAGS += -DRECOVERY_CANT_USE_CONFIG_EXT4_FS_XATTR
 
+# Kernel
+TARGET_KERNEL_SOURCE := kernel/samsung/u8500
+TARGET_KERNEL_CONFIG := janice_defconfig
+BOARD_KERNEL_PAGESIZE := 4096
+BOARD_KERNEL_BASE := 0x40000000
+BOARD_CUSTOM_BOOTIMG_MK := device/samsung/janice/shbootimg.mk
+BOARD_KERNEL_CMDLINE := "androidboot.selinux=permissive"
+TARGET_PROVIDES_ENVIRON_RC := true
+
+# TWRP flags
+DEVICE_RESOLUTION := 480x800
+RECOVERY_GRAPHICS_USE_LINELENGTH := true
+TW_HAS_NO_RECOVERY_PARTITION := true
+TW_FLASH_FROM_STORAGE := true
+TW_INTERNAL_STORAGE_PATH := "/storage/sdcard0"
+TW_INTERNAL_STORAGE_MOUNT_POINT := "sdcard0"
+TW_EXTERNAL_STORAGE_PATH := "/storage/sdcard1"
+TW_EXTERNAL_STORAGE_MOUNT_POINT := "sdcard1"
+TW_INCLUDE_JB_CRYPTO := true
+TW_CRYPTO_FS_TYPE := "ext4"
+TW_CRYPTO_REAL_BLKDEV := "/dev/block/mmcblk0p5"
+TW_CRYPTO_MNT_POINT := "/data"
+TW_CRYPTO_FS_OPTIONS := "noatime,nosuid,nodev,discard,noauto_da_alloc,journal_async_commit,errors=panic wait,check"
+TW_CRYPTO_FS_FLAGS := "0x00000406"
+TW_CRYPTO_KEY_LOC := "/efs/metadata"
+TW_INCLUDE_FUSE_EXFAT := true
+TW_BOARD_CUSTOM_GRAPHICS := ../../../device/samsung/janice/recovery/twrp-graphics.c
+TW_BRIGHTNESS_PATH := /sys/class/backlight/panel/brightness
+TW_MAX_BRIGHTNESS := 255
+TW_NO_USB_STORAGE := true
+TW_NO_REBOOT_BOOTLOADER := true
+TW_HAS_DOWNLOAD_MODE := true
+TW_THEME := portrait_mdpi
+
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/recovery/twrp.fstab:recovery/root/etc/twrp.fstab \
+    $(LOCAL_PATH)/recovery/recovery.fstab:recovery/root/etc/recovery.fstab
+
 # Releasetools
 TARGET_RELEASETOOLS_EXTENSIONS := $(LOCAL_PATH)/releasetools
 
@@ -148,9 +181,6 @@ BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := $(LOCAL_PATH)/configs/bluetooth/i
 TARGET_BOOTANIMATION_PRELOAD := true
 TARGET_BOOTANIMATION_TEXTURE_CACHE := true
 TARGET_BOOTANIMATION_USE_RGB565 := true
-
-# Recovery
-TARGET_RECOVERY_FSTAB := $(LOCAL_PATH)/rootdir/fstab.samsungjanice
 
 # Vibrator
 BOARD_HAS_VIBRATOR_IMPLEMENTATION := ../../device/samsung/janice/vibrator/vibrator.c

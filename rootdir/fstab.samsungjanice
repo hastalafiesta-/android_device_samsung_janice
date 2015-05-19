@@ -13,10 +13,10 @@
 
 # Vold managed volumes
 /devices/sdi2/mmc_host/mmc0/mmc0        auto                auto      defaults                                                                          voldmanaged=sdcard0:8,nonremovable,noemulatedsd
-/devices/sdi0/mmc_host/mmc1/mmc1        auto                auto      defaults                                                                          voldmanaged=sdcard1:auto
+/devices/sdi0/mmc_host/mmc1/mmc1        auto                auto      defaults                                                                          voldmanaged=sdcard1:auto,noemulatedsd
 
 # Recovery
-/dev/block/mmcblk0p15                   /boot               emmc      defaults                                                                          defaults
+/dev/block/mmcblk0p15                   /boot               emmc      defaults                                                                          recoveryonly
 
 # ZRAM
 /dev/block/zram0                        none                swap      defaults                                                                          zramsize=104857600

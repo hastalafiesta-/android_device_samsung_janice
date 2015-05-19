@@ -31,10 +31,6 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/rootdir/init.u8500.rc:root/init.u8500.rc \
     $(LOCAL_PATH)/rootdir/init.u8500.usb.rc:root/init.u8500.usb.rc
 
-# Prebuilt kernel (is not working, just as a placeholder)
-PRODUCT_COPY_FILES += \
-    device/samsung/janice/prebuilt/zImage:zImage
-
 # Init files
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/rootdir/device_tunables.rc:root/device_tunables.rc \
