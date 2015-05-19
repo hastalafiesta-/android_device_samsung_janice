@@ -26,11 +26,6 @@ PRODUCT_AAPT_PREF_CONFIG := hdpi
 PRODUCT_PACKAGES += \
     NovaThorSettings
 
-# U8500 Common init
-PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/rootdir/init.u8500.rc:root/init.u8500.rc \
-    $(LOCAL_PATH)/rootdir/init.u8500.usb.rc:root/init.u8500.usb.rc
-
 # Init files
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/rootdir/device_tunables.rc:root/device_tunables.rc \
@@ -38,6 +33,7 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/rootdir/init.environ.rc:root/init.environ.rc \
     $(LOCAL_PATH)/rootdir/init.samsungjanice.rc:root/init.samsungjanice.rc \
     $(LOCAL_PATH)/rootdir/init.recovery.samsungjanice.rc:root/init.recovery.samsungjanice.rc \
+    $(LOCAL_PATH)/rootdir/init.samsungjanice.usb.rc:root/init.samsungjanice.usb.rc \
     $(LOCAL_PATH)/rootdir/ueventd.samsungjanice.rc:root/ueventd.samsungjanice.rc
 
 # Graphics
