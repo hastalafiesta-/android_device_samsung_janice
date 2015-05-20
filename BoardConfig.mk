@@ -136,6 +136,7 @@ BOARD_KERNEL_BASE := 0x40000000
 BOARD_CUSTOM_BOOTIMG_MK := device/samsung/janice/shbootimg.mk
 BOARD_KERNEL_CMDLINE := "androidboot.selinux=permissive"
 TARGET_PROVIDES_ENVIRON_RC := true
+TARGET_RECOVERY_FSTAB := $(LOCAL_PATH)/rootdir/fstab.samsungjanice
 
 # TWRP flags
 DEVICE_RESOLUTION := 480x800
