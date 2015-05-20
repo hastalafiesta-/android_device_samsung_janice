@@ -16,6 +16,8 @@ ste.video.dec.recycle.delay=1
 ste.video.enc.out.buffercnt=5
 ste.special_fast_dormancy=false
 
+
+
 # Hardware info
 ro.device.chipset=ST-Ericsson NovaThor U8500 (45nm)
 ro.device.cpu=ARMv7 1GHz Dual-core ARM Cortex-A9

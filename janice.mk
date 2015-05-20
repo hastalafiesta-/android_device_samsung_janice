@@ -208,7 +208,14 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.config.sync=yes \
     ro.config.ntp.server_poll=86400000 \
     ro.config.ntp.clock_sync=1800000 \
-    ro.config.ntp.sync_mode=3
+    ro.config.ntp.sync_mode=3 \
+    persist.sys.purgeable_assets=1 \
+    persist.sys.dun.override=0 \
+    ro.ril.disable.power.collapse=0 \
+    pm.sleep_mode=0 \
+    ro.config.nocheckin=1 \
+    ro.kernel.android.checkjni=0 \
+    ro.kernel.checkjni=0
 
 # Use non-open-source parts if present
 $(call inherit-product-if-exists, vendor/samsung/janice/janice/janice-vendor-blobs.mk)
