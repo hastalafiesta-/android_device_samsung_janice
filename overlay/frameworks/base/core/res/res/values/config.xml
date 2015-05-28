@@ -170,7 +170,7 @@
     </string-array>
 
     <!-- Screen brightness when dozing. -->
-    <integer name="config_screenBrightnessDoze">20</integer>
+    <integer name="config_screenBrightnessDoze">50</integer>
 
     <!-- Dream of notifications -->
     <string name="config_dozeComponent">com.android.systemui/com.android.systemui.doze.DozeService</string>
