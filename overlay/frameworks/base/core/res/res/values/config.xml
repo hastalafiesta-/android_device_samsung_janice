@@ -177,5 +177,7 @@
     <bool name="config_dozeAfterScreenOff">true</bool>
     <bool name="config_powerDecoupleInteractiveModeFromDisplay">true</bool>
 
+    <!-- Is the device LTE capable -->
+    <bool name="config_lte_capable">false</bool>
 </resources>
 
