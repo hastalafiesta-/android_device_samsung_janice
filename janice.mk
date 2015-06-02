@@ -55,7 +55,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
     dalvik.vm.heaptargetutilization=0.75 \
     dalvik.vm.heapminfree=512k \
     dalvik.vm.heapmaxfree=4m \
-    dalvik.vm.jit.codecachesize=0 \
     dalvik.vm.image-dex2oat-filter=speed \
     dalvik.vm.dex2oat-filter=interpret-only
 
