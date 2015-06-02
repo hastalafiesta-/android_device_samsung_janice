@@ -106,6 +106,9 @@ BOARD_VOLD_EMMC_SHARES_DEV_MAJOR := true
 BOARD_VOLD_DISC_HAS_MULTIPLE_MAJORS := true
 TARGET_USE_CUSTOM_LUN_FILE_PATH := "/sys/devices/platform/musb-ux500.0/musb-hdrc/gadget/lun%d/file"
 
+# Dex Pre-opt
+WITH_DEXPREOPT := true
+
 # Charging mode
 BOARD_LPM_BOOT_ARGUMENT_NAME := lpm_boot
 BOARD_LPM_BOOT_ARGUMENT_VALUE := 1
