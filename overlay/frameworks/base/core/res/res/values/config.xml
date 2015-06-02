@@ -189,5 +189,46 @@
          your device's memory use without going to the point of causing applications to turn
          off features. -->
     <bool name="config_avoidGfxAccel">true</bool>
+
+<bool name="config_automatic_brightness_available">true</bool>
+    
+     <!-- Array of light sensor LUX values to define our levels for auto backlight brightness support.
+     The N entries of this array define N + 1 zones as follows:
+     Zone 0:        0 <= LUX < array[0]
+     Zone 1:        array[0] <= LUX < array[1]
+     ...
+     Zone N:        array[N - 1] <= LUX < array[N]
+     Zone N + 1:    array[N] <= LUX < infinity
+     Must be overridden in platform specific overlays -->
+    <integer-array name="config_autoBrightnessLevels">
+        <item>7</item> <!-- (0 - 7) Very dark room -->
+        <item>75</item> <!-- (7 - 75) Poor light ambient -->
+        <item>1000</item> <!-- (75 - 1000) Indoor / shadows -->
+        <item>10000</item> <!--(1000 - 10000) Outdoor, (10000 - 16000 (max lux value)) Sunlight outdoor -->
+    </integer-array>
+    
+    <!-- Array of output values for LCD backlight corresponding to the LUX values
+    in the config_autoBrightnessLevels array.  This array should have size one greater
+    than the size of the config_autoBrightnessLevels array.
+    This must be overridden in platform specific overlays -->
+    <integer-array name="config_autoBrightnessLcdBacklightValues">
+        <item>20</item> <!-- (0 - 7) Very dark room -->
+        <item>30</item> <!-- (7 - 75) Poor light ambient -->
+        <item>110</item> <!-- (75 - 1000) Indoor / shadows -->
+        <item>175</item> <!-- (1000 - 10000) Outdoor-->
+        <item>255</item> <!-- (10000 - 16000) Sunlight outdoor -->
+    </integer-array>
+    
+    <!-- Array of output values for button backlight corresponding to the LUX values
+    in the config_autoBrightnessLevels array.  This array should have size one greater
+    than the size of the config_autoBrightnessLevels array.
+    This must be overridden in platform specific overlays -->
+    <integer-array name="config_autoBrightnessButtonBacklightValues">
+        <item>255</item> <!-- (0 - 7) Very dark room -->
+        <item>255</item> <!-- (7 - 75) Poor light ambient -->
+        <item>255</item> <!-- (75 - 1000) Indoor / shadows -->
+        <item>0</item> <!-- (1000 - 10000) Outdoor-->
+        <item>0</item> <!-- (10000 - 16000) Sunlight outdoor -->
+    </integer-array>
 </resources>
 
