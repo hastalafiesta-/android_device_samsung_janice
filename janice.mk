@@ -63,7 +63,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.config.max_starting_bg=8 \
-    config.disable_atlas=true \
     camera2.portability.force_api=1
 
 PRODUCT_TAGS += dalvik.gc.type-precise
