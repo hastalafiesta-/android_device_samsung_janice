@@ -15,7 +15,7 @@ ste.video.dec.mpeg4.in.size=8192
 ste.video.dec.recycle.delay=1
 ste.video.enc.out.buffercnt=5
 ste.special_fast_dormancy=false
-
+persist.sys.force_highendgfx=true
 
 
 # Hardware info
