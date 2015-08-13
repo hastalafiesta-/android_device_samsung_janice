@@ -1,0 +1,38 @@
+on property:sys.boot_completed=1
+    # System permissions for NovaThor Settings package and CyanogenMod Hardware Abstraction Framework
+    chown system system /proc/sys/net/ipv4/tcp_congestion_control
+    chown system system /sys/block/mmcblk0/queue/read_ahead_kb
+    chown system system /sys/class/camera/flash/burning_led
+    chown system system /sys/kernel/s6e63m0/color/main_R
+    chown system system /sys/kernel/s6e63m0/color/main_G
+    chown system system /sys/kernel/s6e63m0/color/main_B
+    chown system system /sys/devices/system/cpu/sched_mc_power_savings
+    chown system system /sys/kernel/abb-charger/charger_curr
+    chown system system /sys/kernel/abb-charger/max_ac_c
+    chown system system /sys/kernel/abb-charger/max_usb_c
+    chown system system /sys/kernel/abb-codec/addiggain2
+    chown system system /sys/kernel/abb-codec/anagain3
+    chown system system /sys/kernel/abb-codec/chargepump
+    chown system system /sys/kernel/abb-codec/classdhpg
+    chown system system /sys/kernel/abb-codec/classdwg
+    chown system system /sys/kernel/abb-codec/eardiggain
+    chown system system /sys/kernel/abb-codec/hsdaclowpow
+    chown system system /sys/kernel/abb-codec/hshpen
+    chown system system /sys/kernel/abb-codec/hsldiggain
+    chown system system /sys/kernel/abb-codec/hslowpow
+    chown system system /sys/kernel/abb-codec/hsrdiggain
+    chown system system /sys/kernel/abb-codec/lpa_mode
+    chown system system /sys/kernel/abb-fg/fg_cyc
+    chown system system /sys/kernel/abb-fg/fg_refresh
+    chown system system /sys/kernel/abb-ponkey/emulator
+    chown system system /sys/kernel/abb-regu/VOTG
+    chown system system /sys/kernel/debug/cpuidle/deepest_state
+    chown system system /sys/kernel/fsync/mode
+    chown system system /sys/kernel/mxt224e/sweep2wake
+    chown system system /sys/kernel/mxt224e/threshold_t48
+    chown system system /sys/module/dhd/parameters/dhdpm_fast
+    chown system system /sys/module/mali/parameters/mali_l2_max_reads
+    chown system system /sys/module/mali/parameters/pre_allocated_memory_size_max
+    chown system system /sys/module/mmc_core/parameters/use_spi_crc
+    chown system system /sys/vibrator/pwm_value
+    write /sys/kernel/mxt224e/threshold_t48 on

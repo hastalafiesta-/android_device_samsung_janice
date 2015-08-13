@@ -1,0 +1,25 @@
+#
+# system.prop for janice
+#
+rild.libpath=/system/lib/libsec-ril.so
+rild.libargs=-d /dev/ttyS0
+ste.cam.ext.cfg.path.secondary=/system/usr/share/camera/config_file/samsung_s5k4ecgx_janice.dat
+ro.telephony.call_ring.multiple=false
+ro.sf.lcd_density=240
+ro.lcd_min_brightness=30
+ste.cam.back.orientation=90
+ste.cam.front.orientation=270
+ste.omx.ctx=0
+ste.nmf.autoidle=1
+ste.video.dec.mpeg4.in.size=8192
+ste.video.dec.recycle.delay=1
+ste.video.enc.out.buffercnt=5
+ste.special_fast_dormancy=false
+
+# Hardware info
+ro.device.chipset=ST-Ericsson NovaThor U8500 (45nm)
+ro.device.cpu=ARMv7 1GHz Dual-core ARM Cortex-A9
+ro.device.gpu=Mali-400MP Single Core
+ro.device.rear_cam=5 Mpix (2592x1944)
+ro.device.front_cam=1.3 Mpix (1280x1024)
+ro.device.screen_res=4,0' 800x480 pixels ( ~233 ppi)

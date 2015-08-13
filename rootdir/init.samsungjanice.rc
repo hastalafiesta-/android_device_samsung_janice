@@ -1,0 +1,589 @@
+import /device_tunables.rc
+import /init.samsungjanice.usb.rc
+
+on early-init
+    write /sys/class/backlight/panel/brightness 70
+
+on init
+    export EXTERNAL_STORAGE /storage/sdcard0
+    export SECONDARY_STORAGE /storage/sdcard1
+
+    mkdir /storage/sdcard0 0700 root root
+    mkdir /storage/sdcard1 0700 root root
+
+    mkdir /mnt/media_rw/sdcard0 0700 media_rw media_rw
+    mkdir /mnt/media_rw/sdcard1 0700 media_rw media_rw
+
+    mkdir /efs 0771 radio system
+    mkdir /modemfs 0771 system system
+    mkdir /preload 0771 system system
+    mkdir /mnt/.lfs 0755 root root
+
+    # For backwards compatibility
+    symlink /storage/sdcard0 /sdcard
+    symlink /storage/sdcard0 /mnt/sdcard
+    symlink /storage/sdcard1 /extSdCard
+    symlink /storage/sdcard1 /mnt/extSdCard
+
+    # Setup the global environment
+    export LD_LIBRARY_PATH /vendor/lib:/system/lib:/system/lib/ste_omxcomponents
+    export OMX_STE_ENS_COMPONENTS_DIR /system/lib/ste_omxcomponents/
+    export OMX_BELLAGIO_LOADER_REGISTRY /system/etc/omxloaders
+    export OMX_STE_CSCALL_COMPONENTS_DIR /system/lib/ste_omxcomponents/
+
+    # Preload libjhead for camera
+    export LD_PRELOAD /system/lib/libjhead.so
+
+    # Vibetonz
+    chmod 0660 /dev/tspdrv
+    chown root shell /dev/tspdrv
+
+    # Shared memory file system
+    mkdir /dev/shm 0700 root system
+    mount tmpfs tmpfs /dev/shm mode=0755,gid=1000
+
+    write /proc/sys/kernel/sched_rt_period_us 10000000
+    write /proc/sys/kernel/sched_rt_runtime_us 9500000
+
+    # Create /tmp directory needed by psccd and CSPSA
+    # ...but make it a symlink so that sysmon may use it also
+    symlink /dev/socket /tmp
+
+    # Mount debugfs in order for Audio ADM component to retrieve debug information
+    mkdir /debug
+    mount debugfs none /debug
+
+    # Prevents permission denied error for telephony
+    chmod 0644 /proc/cmdline
+
+on fs
+
+    mount_all /fstab.samsungjanice
+    swapon_all /fstab.samsungjanice
+    setprop ro.crypto.fuse_sdcard true
+    start cspsa
+
+on post-fs
+
+    chown radio radio /modemfs/APPL
+    mkdir /modemfs/APPL
+    chmod 0755 /modemfs/APPL
+    mkdir /modemfs/BOOT
+    chown radio radio /modemfs/BOOT
+    chmod 0755 /modemfs/BOOT
+    mkdir /modemfs/DO
+    chown radio radio /modemfs/DO
+    chmod 0755 /modemfs/DO
+    mkdir /modemfs/LOG
+    chown radio radio /modemfs/LOG
+    chmod 0755 /modemfs/LOG
+    mkdir /modemfs/TMP
+    chown radio radio /modemfs/TMP
+    chmod 0755 /modemfs/TMP
+
+    mkdir /data/mediaserver 0740 media media
+
+    chown radio radio /modemfs
+    chmod 0771 /modemfs
+    chown radio radio /modemfs/CONF
+    chmod 0755 /modemfs/CONF
+    chown radio radio /modemfs/CONF/MCE
+    chmod 0755 /modemfs/CONF/MCE
+    chown radio radio /modemfs/CONF/MCE/MCE.CFG
+    chmod 0644 /modemfs/CONF/MCE/MCE.CFG
+    chown radio radio /modemfs/PERM
+    chmod 0755 /modemfs/PERM
+    chown radio radio /modemfs/PERM/PROT
+    chmod 0755 /modemfs/PERM/PROT
+    chown radio radio /modemfs/PERM/PROT/LABEP.CFG
+    chmod 0644 /modemfs/PERM/PROT/LABEP.CFG
+    chown radio radio /modemfs/PERM/PROT/PPVALUES.DAT
+    chmod 0644 /modemfs/PERM/PROT/PPVALUES.DAT
+
+    chown radio system /efs
+    chmod 0775 /efs
+    chown radio system /efs/FactoryApp
+    chmod 0775 /efs/FactoryApp
+    chown radio system /efs/imei
+    chmod 0770 /efs/imei
+    chown radio system /efs/bluetooth
+    chown system system /efs/wifi
+
+    # Change the permission sensor chips
+    chown root system /dev/alps_io
+    chmod 0660 /dev/alps_io
+    chown root root /dev/rn5t592
+    chmod 777 /dev/rn5t592
+
+    # Samsung Device permissions
+    chown root system /dev/mmc328x
+    chown root system /dev/bma222
+    chown root system /dev/ecompass_ctrl
+    chmod 0666 /dev/mmc328x
+    chmod 0666 /dev/bma222
+    chmod 0666 /dev/ecompass_ctrl
+
+    # Change permission for touchscreen and touch key
+    chown system radio /sys/class/sec/tsp/cmd
+    chown system radio /sys/class/sec/tsp/cmd_status
+    chown system radio /sys/class/sec/tsp/cmd_result
+    chown system radio /sys/class/sec/sec_touchkey/touchkey_back
+    chown system radio /sys/class/sec/sec_touchkey/touchkey_menu
+    chown radio system /sys/class/sec/sec_touchkey/touch_sensitivity
+    chown system radio /sys/class/sec/sec_touchscreen/tsp_firm_version_panel
+    chown system radio /sys/class/sec/sec_touchscreen/tsp_firm_version_phone
+    chown system radio /sys/class/sec/tsp_noise_test/disp_all_refdata
+    chown system radio /sys/class/sec/tsp_noise_test/disp_all_deltadata
+
+    # PRCMU debug fs
+    chown radio system /sys/power/cpufreq_table
+    chown radio system /sys/power/cpufreq_max_limit
+    chown radio system /sys/power/cpufreq_min_limit
+    chmod 0660 /sys/power/cpufreq_table
+    chmod 0660 /sys/power/cpufreq_max_limit
+    chmod 0660 /sys/power/cpufreq_min_limit
+    chown radio system /debug/prcmu/ape_opp
+    chown radio system /debug/prcmu/ddr_opp
+    chmod 0660 /debug/prcmu/ape_opp
+    chmod 0660 /debug/prcmu/ddr_opp
+
+    # Samsung: ensure read/write access to sensor control device files
+    chmod 0666 /dev/gp2a_prox
+    chmod 0666 /dev/gp2a_light
+    chmod 0666 /dev/mpu60x0_gyro
+    chmod 0666 /dev/mpu60x0_accel
+    chmod 0666 /dev/mmc3280
+
+    # Change the permission sensor chips
+    chown system system /system/etc/sensors.dat
+    chown system system /system/etc/calib.dat
+    chown system system /system/etc/param.dat
+    chmod 0664 /system/etc/sensors.dat
+    chmod 0664 /system/etc/calib.dat
+    chmod 0664 /system/etc/param.dat
+
+    # Change permission for magnetic sensor rev02
+    chown system input /sys/class/input/input8/delay
+    chown system input /sys/class/input/input8/enable
+    chown system input /sys/class/input/input8/filter_enable
+    chown system input /sys/class/input/input8/filter_len
+    chown system input /sys/class/input/input8/filter_threshold
+    chown system input /sys/class/input/input8/filter_noise
+    chown system input /sys/class/input/input8/data
+    chown system input /sys/class/input/input8/status
+    chown system input /sys/class/input/input8/wake
+    chown system input /sys/class/input/input8/position
+    chown system input /sys/class/input/input9/threshold
+    chown system input /sys/class/input/input9/distortion
+    chown system input /sys/class/input/input9/shape
+    chown compass input /sys/class/input/input9/offsets
+
+    # orientation
+    chown system input /sys/class/input/input6/enable
+    chown system input /sys/class/input/input6/delay
+    chown system input /sys/class/input/input6/wake
+    chown system input /sys/class/input/input6/data
+    chown system input /sys/class/input/input6/status
+    write /sys/class/input9/filter_enable 0
+
+    # Change permission for accelerometer
+    chown system input /sys/class/sensors/accelerometer_sensor/raw_data
+    chown system system /sys/class/sensors/accelerometer_sensor/calibration
+
+    chown system system /sys/class/sensors/magnetic_sensor/selftest
+    chown system system /sys/class/sensors/magnetic_sensor/status
+    chown system system /sys/class/sensors/magnetic_sensor/dac
+    chown system system /sys/class/sensors/magnetic_sensor/adc
+
+    chown system system /sys/class/sensors/proximity_sensor/state
+    chown system system /sys/class/sensors/proximity_sensor/proximity_avg
+
+    # Change permission for gyro_sensor
+    chown system system /sys/class/sensors/gyro_sensor/temperature
+
+    # Install Kernel Module
+    symlink /dev/block/mmcblk0p1 /dev/block/param
+    insmod /system/lib/modules/j4fs.ko
+    mount j4fs /dev/block/mmcblk0p1 /mnt/.lfs wait
+
+    insmod /system/lib/modules/param.ko
+    write /sys/class/power_supply/battery/batt_reinit_capacity 1
+    insmod /system/lib/modules/bthid.ko
+
+    # Install Frandom Module
+    insmod /system/lib/modules/frandom.ko
+
+    # exFAT filesystem support
+    insmod /system/lib/modules/exfat.ko
+
+on post-fs-data
+
+    # EFS wifi permissions
+    chown system system /efs/wifi/.mac.info
+    chmod 0664 /efs/wifi/.mac.info
+    
+    # FactoryTest files permission
+    mkdir /efs/FactoryApp 0775
+    chown radio system /efs/FactoryApp
+    chmod 0775 /efs/FactoryApp
+    write /efs/FactoryApp/factorymode ON
+    chown system system /efs/FactoryApp/factorymode
+    chmod 0744 /efs/FactoryApp/factorymode
+
+    # SA, System SW, SAMSUNG create log directory
+    mkdir /data/log 0775 system log
+    chown system log /data/log
+    chmod 0775 /data/log
+    chmod 0775 /data/anr
+
+#[ SEC_MM_DRM
+    # DRM directory creation
+    mkdir /system/etc/security/.drm 0775
+    chown root root /system/etc/security/.drm
+    chmod 0775 /system/etc/security/.drm
+
+    # Added for Playready DRM Support
+    mkdir /data/data/.drm 0775
+    chown drm system /data/data/.drm
+    chmod 0775 /data/data/.drm
+    mkdir /data/data/.drm/.playready 0775
+    chown drm system /data/data/.drm/.playready
+    chmod 0775 /data/data/.drm/.playready
+
+    # Added drm folder to copy drm plugins
+    mkdir /system/lib/drm 0775
+    chown root root /system/lib/drm
+    chmod 0775 /system/lib/drm
+
+    # DivX DRM
+    mkdir /efs/.files 0775
+    mkdir /efs/.files/.dx1 0775
+    mkdir /efs/.files/.dm33 0775
+    mkdir /efs/.files/.mp301 0775
+    chown media system /efs/.files/.dx1
+    chown media system /efs/.files/.dm33
+    chown media system /efs/.files/.mp301
+    chmod 0775 /efs/.files/.dx1
+    chmod 0775 /efs/.files/.dm33
+    chmod 0775 /efs/.files/.mp301
+#]
+
+    # Create basic filesystem structure
+    mkdir /data/misc/bluetoothd 0770 bluetooth bluetooth
+    mkdir /data/misc/bluetooth 0770 system system
+
+    # Create the directories used by the Wireless subsystem
+    mkdir /data/misc/wifi 0770 wifi wifi
+    mkdir /data/misc/wifi/sockets 0770 wifi wifi
+    mkdir /data/misc/wifi/wpa_supplicant 0770 wifi wifi
+    mkdir /data/misc/dhcp 0770 dhcp dhcp
+
+    # Create directory for STE OMX debug logs
+    mkdir /data/ste-debug 0777 root root
+
+    # Create var/run, var/lib for avahi
+    mkdir /var
+    mkdir /var/run
+    mkdir /var/lib
+
+    # Change permissions for modem_log_relay config file
+    chmod 666 /modemfs/trace_auto.conf
+
+
+    # If there is no fs-post-data action in the init.<device>.rc file, you
+    # must uncomment this line, otherwise encrypted filesystems
+    # won't work.
+    # Set indication (checked by vold) that we have finished this action
+    setprop vold.post_fs_data_done 1
+
+on early-boot
+
+    chmod 0777 /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor performance
+    # Prepare modem
+    class_start modem-u8500
+    class_start modem-core
+
+    # Enable autonomous power management in CM
+    write /sys/module/cm/parameters/enable_auto_pm 1
+
+on boot
+
+    # debugfs
+    mount debugfs /sys/kernel/debug /sys/kernel/debug
+
+    chown system system /sys/class/backlight/pri_lcd_bl/brightness
+    chown system system /sys/class/backlight/pwm-backlight/brightness
+    chown system radio /sys/class/backlight/pwm-backlight/device/lcd_power
+    chown system system /sys/class/backlight/pwm-backlight/device/panel_id
+    chown system system /sys/class/backlight/pwm-backlight/device/acl_set
+    chown system system /sys/class/backlight/pwm-backlight/device/gamma_mode
+    chown system system /sys/class/backlight/pwm-backlight/device/gamma_table
+    chown system system /sys/class/leds/button-backlight/brightness
+    chown radio radio /sys/class/usb_switch/FSA_SWITCH/jig_smd
+    chown radio system /sys/class/usb_switch/FSA_SWITCH/smd_wakelock
+    chown system radio /sys/class/sec/switch/usb_state
+
+    chown system system /sys/devices/platform/nmk-i2c.2/i2c-2/2-005c/enable
+    chown system system /sys/devices/platform/nmk-i2c.2/i2c-2/2-0029/power_state
+    chown system system /sys/devices/platform/nmk-i2c.2/i2c-2/2-0068/range
+    chown system system /sys/devices/platform/nmk-i2c.2/i2c-2/2-0068/datarate
+    chown system system /sys/devices/platform/nmk-i2c.2/i2c-2/2-0068/powermode
+    chown system system /sys/devices/platform/nmk-i2c.2/i2c-2/2-001e/mode
+    chown system system /sys/devices/platform/nmk-i2c.2/i2c-2/2-001e/range
+    chown system system /sys/devices/platform/nmk-i2c.2/i2c-2/2-001e/rate
+    chown system system /sys/devices/platform/nmk-i2c.2/i2c-2/2-0018/range
+    chown system system /sys/devices/platform/nmk-i2c.2/i2c-2/2-0018/mode
+    chown system system /sys/devices/platform/nmk-i2c.2/i2c-2/2-0018/rate
+    chown system system /sys/devices/platform/nmk-i2c.2/i2c-2/2-0018/sleep_wake
+    chown system system /sys/devices/platform/nmk-i2c.2/i2c-2/2-0019/mode
+    chown system system /sys/devices/platform/nmk-i2c.2/i2c-2/2-0019/range
+    chown system system /sys/devices/platform/sim-detect.0/voltage
+    chown audio audio /sys/devices/system/cpu/usecase/voice-call
+    chown audio audio /sys/devices/system/cpu/usecase/low-power-audio
+    chown system radio /proc/dump_enable
+
+    # Permission for gpio_keys
+    chown radio system /sys/devices/platform/gpio-keys.0/wakeup_keys
+    write /sys/devices/platform/gpio-keys.0/wakeup_keys 172
+
+    # Audio (Earjack)
+    chown system radio /sys/class/audio/earjack/select_jack
+    chown system radio /sys/class/audio/earjack/key_state
+    chown system radio /sys/class/audio/earjack/state
+    chown media system /sys/class/audio/earjack/reselect_jack
+
+    # GPS
+    chown root system /dev/ttyAMA1
+    chmod 0660 dev/ttyAMA1
+
+    chown root system sys/class/sec/gps/GPS_ON_OFF/value
+    chmod 0664 sys/class/sec/gps/GPS_ON_OFF/value
+
+    chown root system sys/class/sec/gps/GPS_nRST/value
+    chmod 0664 sys/class/sec/gps/GPS_nRST/value
+
+    # Permissions for bluetooth
+    # UART device
+    chown bluetooth net_bt_stack /dev/ttyAMA0
+    chmod 0660 /dev/ttyAMA0
+
+    # For bluetooth. Change access rights as btld runs as bluetooth user
+    chown root bluetooth /sys/class/rfkill/rfkill0
+    chown root bluetooth /sys/class/rfkill/rfkill0/state
+    chown root bluetooth /sys/class/rfkill/rfkill0/claim	
+    chown root bluetooth /sys/class/rfkill/rfkill0/soft
+    chown root bluetooth /sys/class/rfkill/rfkill0/type
+    chmod 0664 /sys/class/rfkill/rfkill0/state
+    chmod 0664 /sys/class/rfkill/rfkill0/claim
+    chmod 0664 /sys/class/rfkill/rfkill0/soft
+    chmod 0664 /sys/class/rfkill/rfkill0/type
+    setprop service.brcm.bt.pbap_mode btld
+    
+    # Power up/down interface
+    chmod 0660 /sys/class/rfkill/rfkill0/type
+    chmod 0660 /sys/class/rfkill/rfkill0/state
+    chown bluetooth net_bt_stack /sys/class/rfkill/rfkill0/state
+    chown bluetooth net_bt_stack /sys/class/rfkill/rfkill0/type
+
+    # Bluetooth MAC address programming
+    setprop ro.bt.bdaddr_path "/efs/bluetooth/bt_addr"
+    chown bluetooth bluetooth ro.bt.bdaddr_path
+    chmod 0644 /efs/bluetooth/addr.txt
+
+    # Permissions for LCD
+    chown system system /sys/class/backlight/panel/brightness
+    chown system system /sys/class/backlight/panel/auto_brightness
+    chown system radio /sys/class/lcd/panel/lcd_power
+    chown system radio /sys/class/lcd/panel/lcd_type
+    chown system media_rw /sys/class/lcd/panel/power_reduce
+    chown system system /sys/class/sec/sec_touchkey/brightness
+
+    # MTP device permission
+    chmod 0660 /dev/usb_mtp_gadget
+    chown system system /dev/usb_mtp_gadget
+
+    # NFC
+    setprop ro.nfc.port "I2C"
+    chmod 0600 /dev/pn544
+    chown nfc nfc /dev/pn544
+
+    # Camera factory
+    chown system system /sys/class/sec/sec_cam/camtype
+    chown system system /sys/class/camera/flash/rear_flash
+    chown system system /sys/class/camera/front/front_camtype
+    chown system system /sys/class/camera/rear/rear_flash
+    chown system system /sys/class/camera/rear/rear_camtype
+
+    # Torch
+    chown system system /sys/class/sec/flash/enable
+    chmod 0666 /sys/class/sec/flash/enable
+
+    # Camera debug
+    setprop persist.debug.extcamera.level 777
+    setprop persist.debug.mmiocamera.level 777
+    setprop debug.libcamera.trace 666
+
+    # Battery
+    chown system system /sys/class/power_supply/battery/batt_vol_adc_cal
+    chown system radio /sys/class/power_supply/battery/fg_reset_soc
+    chown system radio /sys/class/power_supply/battery/batt_type
+    chown system radio /sys/class/power_supply/battery/batt_temp_adc
+    chown system radio /sys/class/power_supply/battery/batt_temp_aver
+    chown system radio /sys/class/power_supply/battery/batt_temp_adc_aver
+    chown system radio /sys/class/power_supply/battery/batt_lp_charging
+    chown system radio /sys/class/power_supply/battery/batt_charging_source
+    chown system radio /sys/class/power_supply/battery/test_mode
+
+    # Set property to change the decoder profile level to 4.1
+    setprop ste.video.decoder.h264.def.lev 4.1   
+
+    # Modem
+    class_start modem
+    class_start default
+
+on charger
+    write /sys/class/power_supply/battery/batt_lp_charging 1
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor powersave
+    write /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor powersave
+
+service charger /sbin/charger
+    class charger
+    critical
+
+# Crash Safe Parameter Storage Area, serving production parameter requests from clients.
+# Configuration is read from file "/etc/cspsa.conf" and each found area spawns a CSPSA server
+# process.
+service cspsa /system/bin/cspsa-server
+    class parameter_storage
+    user root
+    oneshot
+
+# init Phonet net device required for Phonet communication with Modem
+service phonet-netdev /system/bin/ifconfig upnlink0 up
+    class main
+    oneshot
+
+# Copy RF trim data from CSPSA, and start the Modem Storage Agent (MSA) service
+service modem /system/bin/sh /system/etc/ste_modem.sh
+    class modem-u8500
+    user root
+
+# Creating Modem Security daemon
+service copsd /system/bin/copsdaemon
+    class modem-core
+    user root
+
+service admsrv /system/bin/admsrv
+    class main
+    user root
+    group system audio inet net_bt net_bt_admin net_raw shell log
+    ioprio rt 4
+    capability NET_ADMIN NET_RAW SYS_NICE
+
+service geomagneticd /system/bin/geomagneticd6x
+    user compass
+    group system input
+
+service orientationd /system/bin/orientationd6x
+    user compass
+    group system input
+
+# AT daemon
+service atd /system/bin/at_core -mode normal -serial ttyAMA2
+    class modem
+    user root
+    group radio audio
+
+# TA Loader
+service ta_load /system/bin/ta_loader
+    user root
+    group radio
+
+# AT Distributor for factory test
+service at_distributor /system/bin/at_distributor
+    user root
+    group radio log
+
+service usbid_init /system/bin/usbid_init.sh
+    class main
+    oneshot
+
+service mobex-daemon /system/bin/npsmobex
+    class main
+    user system
+    group system radio inet sdcard_rw
+
+# Vibetonz
+service immvibed /system/bin/immvibed
+    class core
+    user shell
+    group shell
+    oneshot
+
+on property:ro.dumpstate.dmesg=1
+    write /proc/sys/kernel/dmesg_restrict 0
+
+service p2p_supplicant /system/bin/wpa_supplicant \
+    -iwlan0 -Dnl80211 -c/data/misc/wifi/wpa_supplicant.conf \
+    -I/system/etc/wifi/wpa_supplicant_overlay.conf -N \
+    -ip2p0 -Dnl80211 -c/data/misc/wifi/p2p_supplicant.conf \
+    -I/system/etc/wifi/p2p_supplicant_overlay.conf \
+    -O/data/misc/wifi/sockets -puse_p2p_group_interface=1 \
+    -e/data/misc/wifi/entropy.bin -g@android:wpa_wlan0
+    class main
+    socket wpa_wlan0 dgram 660 wifi wifi
+    disabled
+    oneshot
+
+service wpa_supplicant /system/bin/wpa_supplicant \
+    -iwlan0 -Dnl80211 -c/data/misc/wifi/wpa_supplicant.conf \
+    -I/system/etc/wifi/wpa_supplicant_overlay.conf \
+    -O/data/misc/wifi/sockets \
+    -e/data/misc/wifi/entropy.bin -g@android:wpa_wlan0
+    class main
+    socket wpa_wlan0 dgram 660 wifi wifi
+    disabled
+    oneshot
+
+service dhcpcd_wlan0 /system/bin/dhcpcd -aABDKL
+    class main
+    disabled
+    oneshot
+
+service dhcpcd_p2p /system/bin/dhcpcd -aABKL
+    class main
+    disabled
+    oneshot
+
+service dhcpcd_bt-pan /system/bin/dhcpcd -ABKL
+    class main
+    disabled
+    oneshot
+
+service iprenew_wlan0 /system/bin/dhcpcd -n
+    class main
+    disabled
+    oneshot
+
+service iprenew_p2p /system/bin/dhcpcd -n
+    class main
+    disabled
+    oneshot
+
+service iprenew_bt-pan /system/bin/dhcpcd -n
+    class main
+    disabled
+    oneshot
+
+# FUSE sdcard daemon service for sdcard
+service fuse_sdcard0 /system/bin/sdcard -u 1023 -g 1023 -d /mnt/media_rw/sdcard0 /storage/sdcard0
+    class late_start
+    disabled
+
+service fuse_sdcard1 /system/bin/sdcard -u 1023 -g 1023 -d /mnt/media_rw/sdcard1 /storage/sdcard1
+    class late_start
+    disabled
+
+on property:sys.boot_completed=1
+    write /sys/class/misc/backlightnotification/enabled 0

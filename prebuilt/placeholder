@@ -1,0 +1,25 @@
+#!/system/bin/sh
+
+echo 0 4 > /sys/kernel/s6e63m0/panel/illumination_table
+echo 25 300 > /sys/kernel/s6e63m0/panel/illumination_table
+
+echo 2 > /sys/kernel/fsync/mode
+echo 0 > /sys/module/mali/parameters/mali_debug_level
+echo 0 > /sys/module/lowmemorykiller/parameters/debug_level
+
+echo N > /sys/module/mmc_core/parameters/use_spi_crc
+echo sioplus > /sys/block/mmcblk0/queue/scheduler
+echo 0 > /sys/block/mmcblk0/queue/iostats
+insmod /system/lib/modules/cpufreq_dynamic.ko
+echo dynamic > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+echo 0 > /sys/kernel/mm/ksm/run
+echo 200000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
+
+echo idx=2 > /sys/kernel/mali/mali_boost_low
+echo idx=4 > /sys/kernel/mali/mali_boost_high
+
+echo varm=0x12 > /sys/kernel/liveopp/arm_step00
+echo varm=0x14 > /sys/kernel/liveopp/arm_step01
+echo varm=0x20 > /sys/kernel/liveopp/arm_step02
+echo varm=0x2F > /sys/kernel/liveopp/arm_step04
+echo 2 > /sys/devices/system/cpu/sched_mc_power_savings
