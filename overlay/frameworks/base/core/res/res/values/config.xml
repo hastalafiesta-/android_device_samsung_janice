@@ -137,17 +137,6 @@
     
     <!-- The VoiceMail default value is displayed to my own number if it is true -->
     <bool name="config_telephony_use_own_number_for_voicemail">true</bool>
-    
-   <!-- Google app battery drain. -->
-    <string-array name="config_disabledComponents">
-    <item>com.google.android.gsf/com.google.android.gsf.update.SystemUpdateActivity</item>
-    <item>com.google.android.gsf/com.google.android.gsf.update.SystemUpdateService$Receiver</item>
-    <item>com.google.android.gsf/com.google.android.gsf.update.SystemUpdateService$SecretCodeReceiver</item>
-    <item>com.google.android.gms/com.google.android.gms.update.SystemUpdateActivity</item>
-    <item>com.google.android.gms/com.google.android.gms.update.SystemUpdateService$Receiver</item>
-    <item>com.google.android.gms/com.google.android.gms.update.SystemUpdateService$ActiveReceiver</item>
-    <item>com.google.android.gms/com.google.android.gms.update.SystemUpdateService$SecretCodeReceiver</item>
-    </string-array>
 
     <!-- Screen brightness when dozing. -->
     <integer name="config_screenBrightnessDoze">30</integer>
