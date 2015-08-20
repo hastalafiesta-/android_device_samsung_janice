@@ -52,8 +52,13 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # Android Runtime flags
 PRODUCT_PROPERTY_OVERRIDES += \
     persist.sys.dalvik.multithread=true \
-    dalvik.vm.heapgrowthlimit=58m \
+    dalvik.vm.dexopt-data-only=1 \
+    dalvik.vm.heapstartsize=5m \
+    dalvik.vm.heapgrowthlimit=48m \
     dalvik.vm.heapsize=128m \
+    dalvik.vm.heaptargetutilization=0.75 \
+    dalvik.vm.heapminfree=512k \
+    dalvik.vm.heapmaxfree=4m \
     dalvik.vm.dex2oat-flags=--no-watch-dog \
     dalvik.vm.dex2oat-filter=interpret-only \
     dalvik.vm.image-dex2oat-filter=speed \
@@ -62,6 +67,8 @@ PRODUCT_PROPERTY_OVERRIDES += \
     dalvik.vm.dex2oat-Xmx=96m \
     dalvik.image-dex2oat-Xms=48m \
     dalvik.image-dex2oat-Xmx=48m
+
+PRODUCT_TAGS += dalvik.gc.type-precise
 
 # Misc flags
 PRODUCT_PROPERTY_OVERRIDES += \
