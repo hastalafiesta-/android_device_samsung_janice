@@ -1,0 +1,2 @@
+## Firmwares
+allow ueventd { firmware_wlan }:file r_file_perms;

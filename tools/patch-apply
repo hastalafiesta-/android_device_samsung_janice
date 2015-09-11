@@ -1,0 +1,26 @@
+#!/bin/bash
+# patch-clean by @nieltg
+
+. $(dirname "${BASH_SOURCE[0]}")/common.sh
+
+app_init "" "$@"
+
+_patch_loop ()
+{
+	# ( base_repo ) => nul; apply patch to specified repo
+	
+	# [ -d "${1}" ] || pa_app_assert
+	
+	# TODO: PA_ENG_PATCH_DIR in common.sh should be abspath
+	local n_absp="$(realpath "${1}")"
+	
+	local n_repo="$(patch_parse_repo "${1}")"
+	local n_titl="$(patch_parse_title "${1}")"
+	
+	log_progress_start "Applying ${n_titl}... "
+	( cd "${ANDROID_BUILD_TOP}/${n_repo}" ; patch -p1 < "${n_absp}" )
+	log_progress_fini "$?" "${n_titl}"
+}
+
+patch_patch_loop "_patch_loop"
+

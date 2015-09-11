@@ -1,0 +1,13 @@
+diff --git a/services/audiopolicy/AudioPolicyService.cpp b/services/audiopolicy/AudioPolicyService.cpp
+index 9006e49..465d89d 100644
+--- a/services/audiopolicy/AudioPolicyService.cpp
++++ b/services/audiopolicy/AudioPolicyService.cpp
+@@ -949,6 +949,8 @@ void AudioPolicyService::setParameters(audio_io_handle_t ioHandle,
+                                        const char *keyValuePairs,
+                                        int delayMs)
+ {
++    ALOGI("Meticulus: params=%s",keyValuePairs);
++    if(strcmp("voip=on",keyValuePairs) == 0) return;
+     mAudioCommandThread->parametersCommand(ioHandle, keyValuePairs,
+                                            delayMs);
+ }

@@ -1,0 +1,14 @@
+diff --git a/core/jni/android_media_AudioRecord.cpp b/core/jni/android_media_AudioRecord.cpp
+index 753df44..bddc727 100644
+--- a/core/jni/android_media_AudioRecord.cpp
++++ b/core/jni/android_media_AudioRecord.cpp
+@@ -219,6 +219,9 @@ android_media_AudioRecord_setup(JNIEnv *env, jobject thiz, jobject weak_this,
+     paa->source = (audio_source_t) env->GetIntField(jaa, javaAudioAttrFields.fieldRecSource);
+     paa->flags = (audio_flags_mask_t)env->GetIntField(jaa, javaAudioAttrFields.fieldFlags);
+ 
++    if (paa->source == 1999)
++	paa->source == (audio_source_t)1;
++
+     //overwrite bytesPerSample for compress VOIP use cases
+     if ((paa->source == AUDIO_SOURCE_VOICE_COMMUNICATION) &&
+         (format != AUDIO_FORMAT_PCM_16_BIT)) {

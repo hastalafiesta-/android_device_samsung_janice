@@ -1,0 +1,9 @@
+/system ext4 /dev/block/mmcblk0p3
+/cache ext4 /dev/block/mmcblk0p4
+/data ext4 /dev/block/mmcblk0p5
+/efs ext4 /dev/block/mmcblk0p7
+#/preload ext4 /dev/block/mmcblk0p9
+/sdcard vfat /dev/block/mmcblk0p8 flags=storage;wipeingui
+/external_sd vfat /dev/block/mmcblk1p1 flags=storage;wipeingui;removable
+/boot emmc /dev/block/mmcblk0p15
+#kernel2 emmc /dev/block/mmcblk0p17

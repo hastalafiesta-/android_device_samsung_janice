@@ -1,0 +1,44 @@
+diff --git a/services/core/java/com/android/server/power/PowerManagerService.java b/services/core/java/com/android/server/power/PowerManagerService.java
+index f1b00b0..d7189f0 100644
+--- a/services/core/java/com/android/server/power/PowerManagerService.java
++++ b/services/core/java/com/android/server/power/PowerManagerService.java
+@@ -148,7 +148,7 @@ public final class PowerManagerService extends SystemService
+     private static final int POWER_HINT_INTERACTION = 2;
+     private static final int POWER_HINT_LOW_POWER = 5;
+ 
+-    private static final int BUTTON_ON_DURATION = 5 * 1000;
++    private static final int BUTTON_ON_DURATION = 2 * 1000;
+ 
+     private final Context mContext;
+     private final ServiceThread mHandlerThread;
+@@ -206,6 +206,7 @@ public final class PowerManagerService extends SystemService
+     // Timestamp of the last call to user activity.
+     private long mLastUserActivityTime;
+     private long mLastUserActivityTimeNoChangeLights;
++    private long mLastButtonActivityTime;
+ 
+     // Timestamp of last interactive power hint.
+     private long mLastInteractivePowerHintTime;
+@@ -988,6 +989,11 @@ public final class PowerManagerService extends SystemService
+                     return true;
+                 }
+             } else {
++                if (eventTime > mLastButtonActivityTime && (event & PowerManager.USER_ACTIVITY_EVENT_BUTTON) != 0) {
++                    mLastButtonActivityTime = eventTime;
++                    mDirty |= DIRTY_USER_ACTIVITY;
++                }
++
+                 if (eventTime > mLastUserActivityTime) {
+                     mLastUserActivityTime = eventTime;
+                     mDirty |= DIRTY_USER_ACTIVITY;
+@@ -1461,7 +1467,7 @@ public final class PowerManagerService extends SystemService
+                     nextTimeout = mLastUserActivityTime
+                             + screenOffTimeout - screenDimDuration;
+                     if (now < nextTimeout) {
+-                        if (now > mLastUserActivityTime + BUTTON_ON_DURATION) {
++                        if (now > mLastButtonActivityTime + BUTTON_ON_DURATION) {
+                             mButtonsLight.setBrightness(0);
+                         } else {
+                             mButtonsLight.setBrightness(mDisplayPowerRequest.screenBrightness);
+-- 
+2.3.5

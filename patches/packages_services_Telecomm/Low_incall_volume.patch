@@ -1,0 +1,69 @@
+From ed77f21e182d01fe9f923863c61762afa1ddb4fc Mon Sep 17 00:00:00 2001
+From: Stefan Berger <s.berger81@gmail.com>
+Date: Sun, 29 Mar 2015 14:38:24 +0200
+Subject: [PATCH] Telecomm: Fix low in-call volume
+
+Change-Id: I62e33492f84e9c9950698313281f60577170a24d
+---
+ .../android/server/telecom/CallAudioManager.java   |   31 ++++++++++++++++++++
+ 1 file changed, 31 insertions(+)
+
+diff --git a/src/com/android/server/telecom/CallAudioManager.java b/src/com/android/server/telecom/CallAudioManager.java
+index b555f85..55b7e89 100644
+--- a/src/com/android/server/telecom/CallAudioManager.java
++++ b/src/com/android/server/telecom/CallAudioManager.java
+@@ -401,6 +401,7 @@ final class CallAudioManager extends CallsManagerListenerBase
+                 // DISCONNECTED. When the call eventually transitions to the next state, audio
+                 // focus will be correctly abandoned by the if clause above.
+             }
++            resetAudioStreamVolume();
+         }
+     }
+ 
+@@ -522,6 +523,7 @@ final class CallAudioManager extends CallsManagerListenerBase
+         Call call = CallsManager.getInstance().getForegroundCall();
+         if (call != null && call.getConnectionService() != null) {
+             call.getConnectionService().onAudioStateChanged(call, mAudioState);
++            resetAudioStreamVolume();
+         }
+     }
+ 
+@@ -550,6 +552,35 @@ final class CallAudioManager extends CallsManagerListenerBase
+     }
+ 
+     /**
++     * Reset the audio stream volume to fix the low in-call volume bug.
++     *
++     * Due to a bug in the OMX system, the audio stream volume is set to 0 after it was set to it's default volume.
++     * Calling resetAudioStreamVolume() triggers the system to reset the volume.
++     *
++     * This should be called on every place where is switched between audio modes.
++     *
++     * REMARK: I think it only appears on the voice call stream, but to be sure I also do it on the bluetooth stream.
++     */
++    private void resetAudioStreamVolume() {
++        // determine actual streamType
++        int streamType = AudioManager.STREAM_VOICE_CALL;
++        if (mBluetoothManager.isBluetoothAudioConnectedOrPending()) {
++            streamType = AudioManager.STREAM_BLUETOOTH_SCO;
++        }
++        // determine volume and 1 level lower volume (lowest level can be 0)
++        int volume = mAudioManager.getStreamVolume(streamType);
++        int lowerVolume = volume - 1;
++        if (lowerVolume < 0) {
++            lowerVolume = 0;
++        }
++        Log.i(this,"resetAudioStreamVolume (streamType=" + streamType + ", streamVolume=" + volume + ")...");
++        // It's important to change it to another volume before restoring the original volume,
++        // otherwise the volume change will NOT be triggered!!
++        mAudioManager.setStreamVolume(streamType, lowerVolume, 0);
++        mAudioManager.setStreamVolume(streamType, volume, 0);
++    }
++
++    /**
+      * Dumps the state of the {@link CallAudioManager}.
+      *
+      * @param pw The {@code IndentingPrintWriter} to write the state to.
+-- 
+1.7.9.5
+

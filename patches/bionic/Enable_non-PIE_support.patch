@@ -1,0 +1,166 @@
+diff --git a/linker/Android.mk b/linker/Android.mk
+index 4298032..a127255 100644
+--- a/linker/Android.mk
++++ b/linker/Android.mk
+@@ -36,6 +36,10 @@ LOCAL_CONLYFLAGS += \
+ LOCAL_CPPFLAGS += \
+     -std=gnu++11 \
+ 
++ifeq ($(TARGET_ENABLE_NON_PIE_SUPPORT),true)
++    LOCAL_CFLAGS += -DENABLE_NON_PIE_SUPPORT
++endif
++
+ # We need to access Bionic private headers in the linker.
+ LOCAL_CFLAGS += -I$(LOCAL_PATH)/../libc/
+ 
+diff --git a/linker/linker.cpp b/linker/linker.cpp
+index 54867dc..0bd97c4 100644
+--- a/linker/linker.cpp
++++ b/linker/linker.cpp
+@@ -1272,6 +1272,54 @@ int soinfo::Relocate(ElfW(Rela)* rela, unsigned count) {
+         break;
+ 
+       case R_AARCH64_COPY:
++#ifdef ENABLE_NON_PIE_SUPPORT
++        if ((flags & FLAG_EXE) == 0) {
++            /*
++              * http://infocenter.arm.com/help/topic/com.arm.doc.ihi0044d/IHI0044D_aaelf.pdf
++              *
++              * Section 4.7.1.10 "Dynamic relocations"
++              * R_AARCH64_COPY may only appear in executable objects where e_type is
++              * set to ET_EXEC.
++              *
++              * FLAG_EXE is set for both ET_DYN and ET_EXEC executables.
++              * We should explicitly disallow ET_DYN executables from having
++              * R_AARCH64_COPY relocations.
++              */
++            DL_ERR("%s R_AARCH64_COPY relocations only supported for ET_EXEC", name);
++            return -1;
++        }
++        count_relocation(kRelocCopy);
++        MARK(rela->r_offset);
++        TRACE_TYPE(RELO, "RELO COPY %16llx <- %lld @ %16llx %s\n",
++                   reloc,
++                   s->st_size,
++                   (sym_addr + rela->r_addend),
++                   sym_name);
++        if (reloc == (sym_addr + rela->r_addend)) {
++            ElfW(Sym)* src = soinfo_do_lookup(this, sym_name, &lsi);
++
++            if (src == NULL) {
++                DL_ERR("%s R_AARCH64_COPY relocation source cannot be resolved", name);
++                return -1;
++            }
++            if (lsi->has_DT_SYMBOLIC) {
++                DL_ERR("%s invalid R_AARCH64_COPY relocation against DT_SYMBOLIC shared "
++                       "library %s (built with -Bsymbolic?)", name, lsi->name);
++                return -1;
++            }
++            if (s->st_size < src->st_size) {
++                DL_ERR("%s R_AARCH64_COPY relocation size mismatch (%lld < %lld)",
++                       name, s->st_size, src->st_size);
++                return -1;
++            }
++            memcpy(reinterpret_cast<void*>(reloc),
++                   reinterpret_cast<void*>(src->st_value + lsi->load_bias), src->st_size);
++        } else {
++            DL_ERR("%s R_AARCH64_COPY relocation target cannot be resolved", name);
++            return -1;
++        }
++        break;
++#else
+         /*
+          * ET_EXEC is not supported so this should not happen.
+          *
+@@ -1283,6 +1331,7 @@ int soinfo::Relocate(ElfW(Rela)* rela, unsigned count) {
+          */
+         DL_ERR("%s R_AARCH64_COPY relocations are not supported", name);
+         return -1;
++#endif
+       case R_AARCH64_TLS_TPREL64:
+         TRACE_TYPE(RELO, "RELO TLS_TPREL64 *** %16llx <- %16llx - %16llx\n",
+                    reloc, (sym_addr + rela->r_addend), rela->r_offset);
+@@ -1465,6 +1514,61 @@ int soinfo::Relocate(ElfW(Rel)* rel, unsigned count) {
+         *reinterpret_cast<ElfW(Addr)*>(reloc) += sym_addr - rel->r_offset;
+         break;
+       case R_ARM_COPY:
++#ifdef ENABLE_NON_PIE_SUPPORT
++        /*
++         * nieltg: There is no 'si' variable because 'soinfo' is now a C++ class
++         * So, its members can be referred by calling their name directly like 'flags', etc
++         */
++        if ((flags & FLAG_EXE) == 0) {
++            /*
++             * http://infocenter.arm.com/help/topic/com.arm.doc.ihi0044d/IHI0044D_aaelf.pdf
++             *
++             * Section 4.7.1.10 "Dynamic relocations"
++             * R_ARM_COPY may only appear in executable objects where e_type is
++             * set to ET_EXEC.
++             *
++             * TODO: FLAG_EXE is set for both ET_DYN and ET_EXEC executables.
++             * We should explicitly disallow ET_DYN executables from having
++             * R_ARM_COPY relocations.
++             */
++            DL_ERR("%s R_ARM_COPY relocations only supported for ET_EXEC", name);
++            return -1;
++        }
++        count_relocation(kRelocCopy);
++        MARK(rel->r_offset);
++        TRACE_TYPE(RELO, "RELO %08x <- %d @ %08x %s", reloc, s->st_size, sym_addr, sym_name);
++        if (reloc == sym_addr) {
++            /*
++             * nieltg: Now there is no 'needed' arg in soinfo::Relocate()
++             * It seems to be replaced with: si->add_child(needed_library_si[i])
++             *
++             * Because of that, 'this' is passed to soinfo_do_lookup() instead of 'nullptr'
++             * So, soinfo_do_lookup() can lookup from things added by si->add_child()
++             */
++            ElfW(Sym)* src = soinfo_do_lookup(this, sym_name, &lsi);
++
++            if (src == NULL) {
++                DL_ERR("%s R_ARM_COPY relocation source cannot be resolved", name);
++                return -1;
++            }
++            if (lsi->has_DT_SYMBOLIC) {
++                DL_ERR("%s invalid R_ARM_COPY relocation against DT_SYMBOLIC shared "
++                       "library %s (built with -Bsymbolic?)", name, lsi->name);
++                return -1;
++            }
++            if (s->st_size < src->st_size) {
++                DL_ERR("%s R_ARM_COPY relocation size mismatch (%d < %d)",
++                       name, s->st_size, src->st_size);
++                return -1;
++            }
++            memcpy(reinterpret_cast<void*>(reloc),
++                   reinterpret_cast<void*>(src->st_value + lsi->load_bias), src->st_size);
++        } else {
++            DL_ERR("%s R_ARM_COPY relocation target cannot be resolved", name);
++            return -1;
++        }
++        break;
++#else
+         /*
+          * ET_EXEC is not supported so this should not happen.
+          *
+@@ -1476,6 +1580,7 @@ int soinfo::Relocate(ElfW(Rel)* rel, unsigned count) {
+          */
+         DL_ERR("%s R_ARM_COPY relocations are not supported", name);
+         return -1;
++#endif
+ #elif defined(__i386__)
+       case R_386_JMP_SLOT:
+         count_relocation(kRelocAbsolute);
+@@ -2401,11 +2506,13 @@ static ElfW(Addr) __linker_init_post_relocation(KernelArgumentBlock& args, ElfW(
+   si->dynamic = nullptr;
+   si->ref_count = 1;
+ 
++#ifndef ENABLE_NON_PIE_SUPPORT
+   ElfW(Ehdr)* elf_hdr = reinterpret_cast<ElfW(Ehdr)*>(si->base);
+   if (elf_hdr->e_type != ET_DYN) {
+     __libc_format_fd(2, "error: only position independent executables (PIE) are supported.\n");
+     exit(EXIT_FAILURE);
+   }
++#endif
+ 
+   // Use LD_LIBRARY_PATH and LD_PRELOAD (but only if we aren't setuid/setgid).
+   parse_LD_LIBRARY_PATH(ldpath_env);

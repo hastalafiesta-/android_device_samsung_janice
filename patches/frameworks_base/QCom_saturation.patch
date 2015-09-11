@@ -1,0 +1,28 @@
+From a00ab045af33ad6f8c257379fb761352811e9257 Mon Sep 17 00:00:00 2001
+From: Meticulus <theonejohnnyd@gmail.com>
+Date: Tue, 25 Feb 2014 11:14:28 -0600
+Subject: [PATCH] fix: Qcom camera features max values not set.
+
+-was returning null for getMaxSaturation. Now returns 0.
+
+Change-Id: Ifdea6cc3af97f3fd065c04cd7d44a2e699ba1dbd
+---
+ core/java/android/hardware/Camera.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/java/android/hardware/Camera.java b/core/java/android/hardware/Camera.java
+index 0764445..ddd99a8 100644
+--- a/core/java/android/hardware/Camera.java
++++ b/core/java/android/hardware/Camera.java
+@@ -2521,7 +2521,7 @@ public String get(String key) {
+          * @return the int value of the parameter
+          */
+         public int getInt(String key) {
+-            return Integer.parseInt(mMap.get(key));
++            return Integer.getInteger(mMap.get(key),0);
+         }
+ 
+         /**
+-- 
+1.9.3
+

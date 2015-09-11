@@ -1,0 +1,125 @@
+From bc318261dbe478fcbc01a507caea1ec9b2f190c6 Mon Sep 17 00:00:00 2001
+From: Meticulus <theonejohnnyd@gmail.com>
+Date: Mon, 1 Dec 2014 09:50:49 -0600
+Subject: [PATCH] core patch
+
+Change-Id: I04ef4ec08038909dddfa17ea9c9655850f54ed21
+---
+ include/utils/Flattenable.h | 22 ++++++++++++++++++++++
+ libutils/Android.mk         |  6 ++++++
+ libutils/Flattenable.cpp    | 24 ++++++++++++++++++++++++
+ 3 files changed, 52 insertions(+)
+ create mode 100644 libutils/Flattenable.cpp
+
+diff --git a/include/utils/Flattenable.h b/include/utils/Flattenable.h
+index 882a8b2..495b90d 100644
+--- a/include/utils/Flattenable.h
++++ b/include/utils/Flattenable.h
+@@ -79,21 +79,35 @@ public:
+  * Flattenable objects must implement this protocol.
+  */
+ 
++#ifndef STE_HARDWARE
+ template <typename T>
++#endif
+ class Flattenable {
+ public:
+     // size in bytes of the flattened object
++#ifdef STE_HARDWARE
++    virtual size_t getFlattenedSize() const = 0;
++#else
+     inline size_t getFlattenedSize() const;
++#endif
+ 
+     // number of file descriptors to flatten
++#ifdef STE_HARDWARE
++    virtual size_t getFdCount() const = 0;
++#else
+     inline size_t getFdCount() const;
++#endif
+ 
+     // flattens the object into buffer.
+     // size should be at least of getFlattenedSize()
+     // file descriptors are written in the fds[] array but ownership is
+     // not transfered (ie: they must be dupped by the caller of
+     // flatten() if needed).
++#ifdef STE_HARDWARE
++    virtual status_t flatten(void*& buffer, size_t& size, int*& fds, size_t& count) const = 0;
++#else
+     inline status_t flatten(void*& buffer, size_t& size, int*& fds, size_t& count) const;
++#endif
+ 
+     // unflattens the object from buffer.
+     // size should be equal to the value of getFlattenedSize() when the
+@@ -102,6 +116,13 @@ public:
+     // don't need to be dupped(). ie: the caller of unflatten doesn't
+     // keep ownership. If a fd is not retained by unflatten() it must be
+     // explicitly closed.
++#ifdef STE_HARDWARE
++    virtual status_t unflatten(void const*& buffer, size_t& size, int const*& fds, size_t& count) = 0;
++
++protected:
++    virtual ~Flattenable() = 0;
++};
++#else
+     inline status_t unflatten(void const*& buffer, size_t& size, int const*& fds, size_t& count);
+ };
+ 
+@@ -123,6 +144,7 @@ inline status_t Flattenable<T>::unflatten(
+         void const*& buffer, size_t& size, int const*& fds, size_t& count) {
+     return static_cast<T*>(this)->T::unflatten(buffer, size, fds, count);
+ }
++#endif
+ 
+ /*
+  * LightFlattenable is a protocol allowing object to serialize themselves out
+diff --git a/libutils/Android.mk b/libutils/Android.mk
+index b1dc1f8..44f69c1 100644
+--- a/libutils/Android.mk
++++ b/libutils/Android.mk
+@@ -44,6 +44,12 @@ commonSources:= \
+ 	VectorImpl.cpp \
+ 	misc.cpp
+ 
++
++ifeq ($(BOARD_USES_STE_HARDWARE),true)
++	commonSources += Flattenable.cpp
++endif
++
++
+ host_commonCflags := -DLIBUTILS_NATIVE=1 $(TOOL_CFLAGS) -Werror
+ 
+ ifeq ($(HOST_OS),windows)
+diff --git a/libutils/Flattenable.cpp b/libutils/Flattenable.cpp
+new file mode 100644
+index 0000000..1f2ffaa
+--- /dev/null
++++ b/libutils/Flattenable.cpp
+@@ -0,0 +1,24 @@
++/*
++ * Copyright (C) 2006 The Android Open Source Project
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *      http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++#include <utils/Flattenable.h>
++
++namespace android {
++
++Flattenable::~Flattenable() {
++}
++
++}; // namespace android
+-- 
+1.9.1
+

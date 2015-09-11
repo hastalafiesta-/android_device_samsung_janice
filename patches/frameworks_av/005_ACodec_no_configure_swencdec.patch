@@ -1,0 +1,39 @@
+From 4d52f9e78767a0e549a25720eed674f2855c50a7 Mon Sep 17 00:00:00 2001
+From: Meticulus <theonejohnnyd@gmail.com>
+Date: Fri, 10 Oct 2014 11:03:45 -0500
+Subject: [PATCH] ACodec: don't configure software encoders/decoders.
+
+-Not sure if this is correct in principal, but in practice every time
+I have seen this called on a software dec/enc, it dies. I have also
+seen multiple, stackoverflow queries that tring to create and
+instance of MediaCodec (software dec/enc) fails, probably because
+of what this fixes.
+
+Change-Id: I819b3a22bc74bf8b7b27326c1bf906653ba439d8
+---
+ media/libstagefright/ACodec.cpp |    9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/media/libstagefright/ACodec.cpp b/media/libstagefright/ACodec.cpp
+index a3d54a4..4764a76 100755
+--- a/media/libstagefright/ACodec.cpp
++++ b/media/libstagefright/ACodec.cpp
+@@ -1083,6 +1083,15 @@ status_t ACodec::configureCodec(
+     }
+ 
+     mIsEncoder = encoder;
++   /* Meticulus:
++    * Software codecs don't require configuration? Not sure
++    * but skipping configuration for them seems to work.
++    */
++    if(strncmp("OMX.google.h264", mComponentName.c_str(), 15) == 0
++       || strncmp("OMX.ffmpeg.h264", mComponentName.c_str(), 15) == 0){
++	ALOGI("Meticulus: Soft codec %s detected, skipping configureCodec\n", mComponentName.c_str());
++       return OK;
++    }
+ 
+     status_t err = setComponentRole(encoder /* isEncoder */, mime);
+ 
+-- 
+1.7.9.5
+

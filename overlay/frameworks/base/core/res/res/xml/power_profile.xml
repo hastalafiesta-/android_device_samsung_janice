@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<device name="Android">
+    <!-- Most values are the incremental current used by a feature,
+       in mA (measured at nominal voltage).
+       The default values are deliberately incorrect dummy values.
+       OEM's must measure and provide actual values before
+       shipping a device.
+       Example real-world values are given in comments, but they
+       are totally dependent on the platform and can vary
+       significantly, so should be measured on the shipping platform
+       with a power meter. -->
+  
+  <item name="none">0</item>
+  <item name="screen.on">86</item>  <!-- ~200mA -->
+  <item name="screen.full">124</item>  <!-- ~300mA -->
+  <item name="bluetooth.active">32</item> <!-- Bluetooth data transfer, ~10mA -->
+  <item name="bluetooth.on">0.3</item>  <!-- Bluetooth on & connectable, but not connected, ~0.1mA -->
+  <item name="wifi.on">0.3</item>  <!-- ~3mA -->
+  <item name="wifi.active">83</item>  <!-- WIFI data transfer, ~200mA -->
+  <item name="wifi.scan">52</item>  <!-- WIFI network scanning, ~100mA -->
+  <item name="dsp.audio">31</item> <!-- ~10mA -->
+  <item name="dsp.video">203</item> <!-- ~50mA -->
+  <item name="radio.active">238</item> <!-- ~200mA -->
+  <item name="radio.scanning">82</item> <!-- cellular radio scanning for signal, ~10mA -->
+  <item name="gps.on">1</item> <!-- ~50mA -->
+  
+  <!-- Current consumed by the radio at different signal strengths, when paging -->
+  <array name="radio.on"> <!-- Strength 0 to BINS-1 -->
+      <value>2.7</value> <!-- ~2mA -->
+      <value>3</value> <!-- ~1mA -->
+  </array>
+  
+  <!-- Different CPU speeds as reported in
+       /sys/devices/system/cpu/cpu0/cpufreq/stats/time_in_state -->
+  <array name="cpu.speeds">
+      <value>800000</value>
+      <value>400000</value>
+      <value>200000</value>
+  </array>
+  
+  <!-- Current when CPU is idle -->
+  <item name="cpu.idle">2</item>
+  
+  <!-- Current at each CPU speed, as per 'cpu.speeds' -->
+  <array name="cpu.active">
+      <value>203</value>
+      <value>85</value>
+      <value>55</value>
+  </array>
+  
+  <!-- This is the battery capacity in mAh (measured at nominal voltage) -->
+  <item name="battery.capacity">1500</item>
+  
+</device>
+

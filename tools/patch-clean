@@ -1,0 +1,20 @@
+#!/bin/bash
+# patch-clean by @nieltg
+
+. $(dirname "${BASH_SOURCE[0]}")/common.sh
+
+app_init "" "$@"
+
+_clean_loop ()
+{
+	# ( base_repo ) => nul; clean repos to its original state
+	
+	# [ -d "${1}" ] || pa_app_assert
+	
+	log_progress_start "Cleaning ${1}... "
+	( cd "${ANDROID_BUILD_TOP}/${1}" ; git checkout . ; git clean -f )
+	log_progress_fini "$?" "${1}"
+}
+
+patch_repo_loop "_clean_loop"
+

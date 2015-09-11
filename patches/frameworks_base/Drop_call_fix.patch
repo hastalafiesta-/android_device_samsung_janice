@@ -1,0 +1,30 @@
+From 885532f3b06f676bba0a30eacbc24b02a50e3420 Mon Sep 17 00:00:00 2001
+From: Dhoine <nikolaikolyago@gmail.com>
+Date: Fri, 29 May 2015 14:17:36 +0300
+Subject: [PATCH] reapply patch
+
+Change-Id: Ic317b7dd951f7ced9bf547244863ac56900a142d
+---
+ libs/hwui/LayerRenderer.cpp | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/libs/hwui/LayerRenderer.cpp b/libs/hwui/LayerRenderer.cpp
+index 83f9c6a..b4b7a03 100644
+--- a/libs/hwui/LayerRenderer.cpp
++++ b/libs/hwui/LayerRenderer.cpp
+@@ -196,6 +196,12 @@ Layer* LayerRenderer::createRenderLayer(RenderState& renderState, uint32_t width
+         return NULL;
+     }
+ 
++    if (width == 0 && height == 0) {		
++        ALOGW("Trying to obtain a zero-size layer, setting fall-back size 512x768");		
++        width = 512;		
++        height = 768;
++    }
++	
+     caches.activeTexture(0);
+     Layer* layer = caches.layerCache.get(renderState, width, height);
+     if (!layer) {
+-- 
+2.1.4
+

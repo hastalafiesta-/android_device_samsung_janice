@@ -1,0 +1,35 @@
+From f0d5be1cf12667432a933bcd58d358888abe6dce Mon Sep 17 00:00:00 2001
+From: Meticulus <theonejohnnyd@gmail.com>
+Date: Fri, 10 Oct 2014 16:25:16 -0500
+Subject: [PATCH] STE-OMX Fix Streaming Video
+
+-Don't store metadata in buffers. We don't support that at all.
+
+Change-Id: I8cafed3e425d822e710d97971b2501ee75bbd069
+---
+ media/libstagefright/ACodec.cpp |    4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/media/libstagefright/ACodec.cpp b/media/libstagefright/ACodec.cpp
+index a3d54a4..340c873 100755
+--- a/media/libstagefright/ACodec.cpp
++++ b/media/libstagefright/ACodec.cpp
+@@ -488,11 +488,15 @@ status_t ACodec::allocateBuffersOnPort(OMX_U32 portIndex) {
+ 
+     status_t err;
+     if (mNativeWindow != NULL && portIndex == kPortIndexOutput) {
++#ifdef STE_HARDWARE
++	err = allocateOutputBuffersFromNativeWindow();
++#else
+         if (mStoreMetaDataInOutputBuffers) {
+             err = allocateOutputMetaDataBuffers();
+         } else {
+             err = allocateOutputBuffersFromNativeWindow();
+         }
++#endif
+     } else {
+         OMX_PARAM_PORTDEFINITIONTYPE def;
+         InitOMXParams(&def);
+-- 
+1.7.9.5
+

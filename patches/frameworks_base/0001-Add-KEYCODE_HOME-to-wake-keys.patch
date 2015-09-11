@@ -1,0 +1,25 @@
+From 9af096b600f642f3e87a02496385930bab8ddc2e Mon Sep 17 00:00:00 2001
+From: Dhoine <nikolaikolyago@gmail.com>
+Date: Tue, 2 Jun 2015 11:06:56 +0300
+Subject: [PATCH] Add KEYCODE_HOME to wake keys
+
+Change-Id: Ibd1dfee015f272fc840b522e49ada0ebf623066a
+---
+ core/java/android/view/KeyEvent.java | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/core/java/android/view/KeyEvent.java b/core/java/android/view/KeyEvent.java
+index 243a0fc..691c342 100644
+--- a/core/java/android/view/KeyEvent.java
++++ b/core/java/android/view/KeyEvent.java
+@@ -1809,6 +1809,7 @@ public class KeyEvent extends InputEvent implements Parcelable {
+             case KeyEvent.KEYCODE_SLEEP:
+             case KeyEvent.KEYCODE_WAKEUP:
+             case KeyEvent.KEYCODE_PAIRING:
++            case KeyEvent.KEYCODE_HOME:
+                 return true;
+         }
+         return false;
+-- 
+2.1.4
+

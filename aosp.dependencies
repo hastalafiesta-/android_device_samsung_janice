@@ -1,0 +1,10 @@
+[
+
+   {
+    "remote": "github",
+    "revision": "cm-12.1",
+    "repository": "CyanogenMod/android_packages_apps_SamsungServiceMode",
+    "target_path": "packages/apps/SamsungServiceMode"
+   }
+
+]

@@ -1,0 +1,22 @@
+# Android fstab file.
+# The filesystem that contains the filesystem checker binary (typically /system) cannot
+# specify MF_CHECK, and must come before any filesystems that do specify MF_CHECK
+# Data partition must be located at the bottom for supporting device encryption
+
+#<src>                                  <mnt_point>         <type>    <mnt_flags and options>                                                           <fs_mgr_flags>
+/dev/block/mmcblk0p3                    /system             ext4      ro,noatime,errors=panic                                                           wait
+/dev/block/mmcblk0p2                    /modemfs            ext4      noatime,nosuid,nodev,journal_async_commit,errors=panic                            wait,check
+/dev/block/mmcblk0p4                    /cache              ext4      noatime,nosuid,nodev,journal_async_commit,errors=panic                            wait,check
+/dev/block/mmcblk0p7                    /efs                ext4      noatime,nosuid,nodev,journal_async_commit,errors=panic                            wait,check
+/dev/block/mmcblk0p9                    /preload            ext4      ro,noatime,errors=panic                                                           wait
+/dev/block/mmcblk0p5                    /data               ext4      noatime,nosuid,nodev,discard,noauto_da_alloc,journal_async_commit,errors=panic    wait,check,encryptable=/efs/metadata
+
+# Vold managed volumes
+/devices/sdi2/mmc_host/mmc0/mmc0        auto                auto      defaults                                                                          voldmanaged=sdcard0:8,nonremovable,noemulatedsd
+/devices/sdi0/mmc_host/mmc1/mmc1        auto                auto      defaults                                                                          voldmanaged=sdcard1:auto
+
+# Recovery
+/dev/block/mmcblk0p15                   /boot               emmc      defaults                                                                          recoveryonly
+
+# ZRAM
+/dev/block/zram0                        none                swap      defaults                                                                          zramsize=104857600

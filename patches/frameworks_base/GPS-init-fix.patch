@@ -1,0 +1,31 @@
+From bf420526170a5018737f5742285a84c4315a43a0 Mon Sep 17 00:00:00 2001
+From: Dhoine <nikolaikolyago@gmail.com>
+Date: Mon, 1 Jun 2015 19:35:51 +0300
+Subject: [PATCH] Rework this patch again
+
+Change-Id: Ie0d07e194714ed27e620a677fb7d016284f8ea96
+---
+ .../core/java/com/android/server/location/GpsLocationProvider.java     | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/services/core/java/com/android/server/location/GpsLocationProvider.java b/services/core/java/com/android/server/location/GpsLocationProvider.java
+index bebb20b..0d7497c 100644
+--- a/services/core/java/com/android/server/location/GpsLocationProvider.java
++++ b/services/core/java/com/android/server/location/GpsLocationProvider.java
+@@ -990,11 +990,12 @@ public class GpsLocationProvider implements LocationProviderInterface {
+                 Log.e(TAG, "unable to parse SUPL_PORT: " + portString);
+             }
+         }
+-        if (mSuplServerHost != null
++/*        if (mSuplServerHost != null
+                 && mSuplServerPort > TCP_MIN_PORT
+                 && mSuplServerPort <= TCP_MAX_PORT) {
+             native_set_agps_server(AGPS_TYPE_SUPL, mSuplServerHost, mSuplServerPort);
+         }
++}*/
+     }
+ 
+     /**
+-- 
+2.1.4
+
