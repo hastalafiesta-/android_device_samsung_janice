@@ -30,18 +30,75 @@ PRODUCT_PROPERTY_OVERRIDES += \
     debug.sf.hw=1 \
     debug.hwui.render_dirty_regions=false
 
+# RIL
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.ril.hsxpa=1 \
+    ro.ril.gprsclass=10 \
+    ro.telephony.ril_class=SamsungU8500RIL \
+    ro.telephony.sends_barcount=1 \
+    ro.telephony.ril.config=signalstrength \
+    mobiledata.interfaces=pdp0,wlan0,gprs,ppp0 \
+    ro.telephony.call_ring.delay=3000 \
+    ste.special_fast_dormancy=false \
+	ro.telephony.call_ring.multiple=false
+
+PRODUCT_PROPERTY_OVERRIDES += \
+    wifi.interface=wlan0 \
+    wifi.supplicant_scan_interval=300
+
+
+# Non-device-specific props
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.com.google.locationfeatures=1 \
+    ro.setupwizard.mode=OPTIONAL \
+    ro.setupwizard.enable_bypass=1 \
+    persist.sys.purgeable_assets=1 \
+    persist.sys.dun.override=0 \
+    ro.ril.disable.power.collapse=0 \
+    pm.sleep_mode=1 \
+    ro.config.nocheckin=1 \
+    ro.kernel.android.checkjni=0 \
+	dalvik.vm.checkjni=false \
+    ro.kernel.checkjni=0 \
+    android.webview.force_aosp=false \
+    persist.sys.media.use-awesome=true \
+    ro.config.sync=yes \
+    ro.config.ntp.server_poll=86400000 \
+    ro.config.ntp.clock_sync=1800000 \
+    ro.config.ntp.sync_mode=3 \
+    windowsmgr.max_events_per_sec=90 \
+    ro.max.fling_velocity=12000 \
+    ro.min.fling_velocity=8000 \
+    ro.min_pointer_dur=8 \
+	audio.offload.disable=1
+
+# HWUI flags
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.hwui.texture_cache_size=8 \
+    ro.hwui.layer_cache_size=6 \
+    ro.hwui.path_cache_size=2 \
+	ro.hwui.drop_shadow_cache_size=1 \
+	ro.hwui.gradient_cache_size=0.2 \
+	ro.hwui.r_buffer_cache_size=1
+
+# Storage switch
+ PRODUCT_PROPERTY_OVERRIDES += \
+    persist.sys.vold.switchablepair=sdcard0,sdcard1
+
 # Media
 PRODUCT_COPY_FILES += \
     frameworks/av/media/libstagefright/data/media_codecs_google_audio.xml:system/etc/media_codecs_google_audio.xml \
     frameworks/av/media/libstagefright/data/media_codecs_google_telephony.xml:system/etc/media_codecs_google_telephony.xml \
-    frameworks/av/media/libstagefright/data/media_codecs_google_video.xml:system/etc/media_codecs_google_video.xml
+    frameworks/av/media/libstagefright/data/media_codecs_google_video_le.xml:system/etc/media_codecs_google_video_le.xml
 
 # Wifi
 PRODUCT_PACKAGES += \
     libnetcmdiface \
-    wpa_supplicant\
-    Launcher3 \
-    Terminal
+    wpa_supplicant \
+	libwpa_client \
+	hostapd \
+	dhcpcd.conf
+    
 $(call inherit-product-if-exists, hardware/broadcom/wlan/bcmdhd/firmware/bcm4330/device-bcm.mk)
 
 # Audio
@@ -51,17 +108,10 @@ PRODUCT_PACKAGES += \
     libaudioutils \
     libtinyalsa
 
-# U8500 Hardware
-$(call inherit-product, hardware/u8500/u8500.mk)
-
 # USB
 PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
     persist.sys.usb.config=mtp \
     persist.service.adb.enable=1
-
-#ART
-PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
-    dalvik.vm.dex2oat-flags=--no-watch-dog 
 
 # Charger Prebuilt (temporary solution for lollipop)
 # Use prebuilt charger and images from KitKat
@@ -120,28 +170,17 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/handheld_core_hardware.xml:system/etc/permissions/handheld_core_hardware.xml \
     packages/wallpapers/LivePicker/android.software.live_wallpaper.xml:system/etc/permissions/android.software.live_wallpaper.xml
 
+# U8500 Hardware
+$(call inherit-product, hardware/u8500/u8500.mk)
+
 # Live Wallpapers
 PRODUCT_PACKAGES += \
     librs_jni
-
-# Dalvik VM config for 768MB RAM devices
-PRODUCT_TAGS += dalvik.gc.type-precise
 
 # Include blobs
 PRODUCT_COPY_FILES += \
     $(call find-copy-subdir-files,*,$(LOCAL_PATH)/configs/system,system) \
     $(call find-copy-subdir-files,*,$(LOCAL_PATH)/configs/root,root)
 
-# Use the non-open-source parts, if they're present
-include vendor/samsung/janice/vendor-common.mk
-
-# == BEGIN LOCAL CONFIG ==
-
-# For better compatibility with ROMs (like Slim, PAC)
-$(call inherit-product, vendor/samsung/janice/janice/janice-vendor-blobs.mk)
-    
-# Wi-Fi test
-PRODUCT_PACKAGES += \
-libwpa_client \
-hostapd \
-dhcpcd.conf
+# Use non-open-source parts if present
+$(call inherit-product-if-exists, vendor/samsung/janice/janice/janice-vendor-blobs.mk)
